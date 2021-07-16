@@ -12,6 +12,7 @@
     <script src="https://kit.fontawesome.com/656d6b4226.js" crossorigin="anonymous"></script>
 </head>
 <body>
+<div class='mobile-wrapper'>
     <div class='container-flex' style='height: 80%'>
         <div class="bg"></div>
         <div class="bg bg2"></div>
@@ -22,7 +23,7 @@
             </div>
             <div class='col-md-9 col-sm-12'>
                 <span class='intro-header'>Hey! I’m Alex,</span><br>
-                <span class='intro-subtext'>a third year student studying Management Information Systems in McCombs at the University of Texas at Austin (hook ‘em).</span><br>
+                <span class='intro-subtext'>a third year student studying Management Information Systems in McCombs at the University of Texas at Austin (hook ‘em)</span><br>
                 <a href="https://www.linkedin.com/in/alex-swearingen-2b3017153/" class='social-icon' target="_blank">
                     <i class="fab fa-linkedin"></i>
                 </a>
@@ -138,6 +139,7 @@
             </div>
         </div>
     </div>
+</div>
 <script>
 $(document).ready(function() {
     console.log("test");
@@ -173,7 +175,11 @@ $(document).ready(function() {
 
     body {
       margin:0;
-      overflow-x: hidden !important;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .mobile-wrapper {
+        overflow-x: hidden;
     }
 
     .bg {
@@ -328,9 +334,6 @@ $(document).ready(function() {
         max-width: 50%;
     }
     @media only screen and (max-width : 750px) {
-        body {
-            overflow-x: hidden !important;
-        }
         .headshot {
             width: 50%;
         }
