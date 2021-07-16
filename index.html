@@ -1,0 +1,370 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1">
+
+    <title>Uplift Austin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/656d6b4226.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class='container-flex topbar'>
+    <div class='row nav-padding'>
+        <div class='col-2'>
+            <div class='logo-container'>
+                <a href='#' class='link-home'>
+                    <img src="./static/logo.png" class='logo' />
+                </a>
+            </div>
+        </div>
+        <div class='col-10 expandedCol' align='right'>
+            <a href='#' class='nav-link link-problem'>
+                The Problem
+            </a>
+            <a href='#' class='nav-link link-solution'>
+                What We Do
+            </a>
+            <a href='#' class='nav-link link-events'>
+                Get Involved
+            </a>
+        </div>
+        <div class='col-10 smallCol'>
+            <div class='dropdown'>
+                <button class='btn btn-light dropdown-toggle dropBtn' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+                    ...
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby='dropdownMenuButton'>
+                    <a href='/about' class='dropdown-item link-problem'>
+                        The Problem
+                    </a>
+                    <a href='/register' class='dropdown-item link-solution'>
+                        What We Do
+                    </a>
+                    <a href='/login' class='dropdown-item link-events'>
+                        Get Involved
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style='height: 60px'></div>
+<div class='container-flex'>
+    <div class='row intro'>
+        <div class='col-md-8 col-sm-12 main-text-container'>
+            <span class='main-text'>Uplift Austin is a non-profit philanthropy organization whose purpose is to help tackle the homeless crisis in Austin by connecting with other charitable organizations who work to serve this community.</span>
+        </div>
+        <div class='col-md-4 col-sm-12 involve' align='center'>
+            <span class='main-text'>Get Involved!</span>
+            <div class="d-grid gap-2">
+              <button class="btn btn-primary involve-button link-problem" type="button">Learn More</button>
+              <button class="btn btn-primary involve-button link-events" type="button">Upcoming Events</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class='container-flex'>
+    <div class='row problem'>
+        <span class='problem-title'>Homelessness in Austin by the numbers...</span>
+        <div class='col-md-4 col-sm-12'>
+            <i class="far fa-arrow-alt-circle-up problem-icon"></i><br>
+            <span class='problem-subtitle'>11% increase</span><br>
+            <span class='problem-text'>in the number of homeless people in Austin between 2019 and 2020.</span><br><br>
+        </div>
+        <div class='col-md-4 col-sm-12'>
+            <i class="fas fa-universal-access problem-icon"></i><br>
+            <span class='problem-subtitle'>1,574 people</span><br>
+            <span class='problem-text'>identified as being unsheltered in Travis County in 2020.</span><br><br>
+        </div>
+        <div class='col-md-4 col-sm-12'>
+            <i class="fas fa-wheelchair problem-icon"></i><br>
+            <span class='problem-subtitle'>70%</span><br>
+            <span class='problem-text'>of the homeless population are living with a disability.</span><br><br>
+        </div>
+    </div>
+</div>
+<div class='container-flex'>
+    <div class='row solution'>
+        <span class='solution-title'>What we do...</span>
+        <div class='col-md-4 col-sm-12'>
+            <i class="fas fa-hands-helping solution-icon"></i><br>
+            <span class='solution-subtitle'>Volunteering</span><br>
+            <span class='solution-text'>description 1</span><br><br>
+        </div>
+        <div class='col-md-4 col-sm-12'>
+            <i class="fas fa-money-bill-wave solution-icon"></i><br>
+            <span class='solution-subtitle'>Fundraising</span><br>
+            <span class='solution-text'>description 2</span><br><br>
+        </div>
+        <div class='col-md-4 col-sm-12'>
+            <i class="fas fa-wheelchair solution-icon"></i><br>
+            <span class='solution-subtitle'>Something</span><br>
+            <span class='solution-text'>description 3</span><br><br>
+        </div>
+    </div>
+</div>
+<div class='container-flex'>
+    <div class='row events'>
+        <span class='events-title'>Upcoming Events...</span>
+        <div class='col-md-12 col-sm-12'>
+            <div class='calendar-container'>
+                <div data-tockify-component="calendar" data-tockify-calendar="alex.swearingen"></div>
+            </div>
+            <script data-cfasync="false" data-tockify-script="embed" src="https://public.tockify.com/browser/embed.js"></script>
+        </div>
+    </div>
+</div>
+<div class='container-flex'>
+    <div class='row footer'>
+        <div class='col-6'>
+            <a href='#' class='social-media'><i class="fab fa-instagram"></i></a>
+            <a href='#' class='social-media'><i class="fab fa-twitter"></i></a>
+            <a href='#' class='social-media'><i class="fab fa-facebook"></i></a>
+        </div>
+        <div class='col-6'>
+            <a href='#' class='links link-home'>Home</a><br>
+            <a href='#' class='links link-problem'>The Problem</a><br>
+            <a href='#' class='links link-solution'>What We Do</a><br>
+            <a href='#' class='links link-events'>Get Involved</a><br>
+            <a href='#' class='links'>Contact Us</a><br>
+        </div>
+        <span class='legal'>legal shit legal shit legal shit legal shit legal shit legal shit legal shit legal shit legal shit legal shit </span>
+    </div>
+
+</div>
+<script>
+$(document).ready(function() {
+    console.log("test");
+    $('.link-home').on('click', function() {
+        $('html, body').stop().animate({scrollTop:$(".intro").offset().top}, 100);
+    });
+    $('.link-problem').on('click', function() {
+       $('html, body').stop().animate({scrollTop:$(".problem").offset().top}, 100);
+    });
+    $('.link-solution').on('click', function() {
+        $('html, body').stop().animate({scrollTop:$(".solution").offset().top}, 100);
+    });
+    $('.link-events').on('click', function() {
+        $('html, body').stop().animate({scrollTop:$(".events").offset().top}, 100);
+    });
+
+});
+</script>
+<style type='text/css'>
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
+    html, body {
+        font-family: 'Merriweather', serif !important;
+        height: 100%;
+        width: 100%;
+    }
+    .topbar {
+        width: 100%;
+        height: 60px;
+        position: fixed;
+        margin-top: 0;
+        padding-top: 0;
+        top: 0;
+        background-color: #fff;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+        z-index: 255;
+    }
+    .nav-padding {
+        padding-left: 10%;
+        padding-right: 10%;
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+    }
+    .logo {
+        padding-top: 5px;
+        margin-top: 0px;
+        height: 50px;
+    }
+    .logo-text {
+        margin-left: 10px;
+        font-weight: 900;
+        font-size: 30px;
+    }
+
+    .nav-link {
+        font-size: 16px;
+        margin-right: 10px;
+        font-weight: 600;
+        color: #034ea3;
+        line-height: 50px;
+        display: inline-block;
+    }
+    .dropBtn {
+        float: right;
+        margin-top: 10px;
+        margin-right: 10px;
+    }
+    .expandedCol {
+        display: block;
+    }
+    .smallCol {
+        display: none;
+    }
+    .intro {
+        min-height: 80%;
+        padding-left: 10%;
+        padding-right:  10%;
+        background-image: url('./static/austin.png');
+        background-size: cover;
+        align-items: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+    .main-text {
+        color: #fff;
+        font-size: 30px;
+        font-weight: 600;
+        -webkit-filter: drop-shadow(3px 3px 3px rgba(0,0,0,0.5));
+    }
+    .involve-button {
+        background-color: #0f2a47;
+        border-radius: 0px;
+        border: 1px solid #fff;
+    }
+    .main-text-container {
+        padding: 20px;
+    }
+    .problem {
+        padding-top: 7%;
+        padding-bottom: 7%;
+        padding-left: 10%;
+        padding-right: 10%;
+        align-items: center;
+    }
+    .problem-title {
+        font-weight: 800;
+        font-size: 40px;
+        color: #0f2a47;
+        padding-bottom: 30px;
+    }
+    .problem-subtitle {
+        font-weight: 800;
+        font-size: 30px;
+        color: #0f2a47;
+    }
+    .problem-text {
+        font-size: 20px;
+        color: #0f2a47;
+    }
+    .problem-icon {
+        font-size: 60px;
+        color: #0f2a47;
+    }
+
+    .solution {
+        padding-top: 7%;
+        padding-bottom: 7%;
+        padding-left: 10%;
+        padding-right: 10%;
+        align-items: center;
+        background-color: #0f2a47;
+    }
+
+    .solution-title {
+        font-weight: 800;
+        font-size: 40px;
+        color: #fff;
+        padding-bottom: 30px;
+    }
+    .solution-subtitle {
+        font-weight: 800;
+        font-size: 30px;
+        color: #fff;
+    }
+    .solution-text {
+        font-size: 20px;
+        color: #fff;
+    }
+    .solution-icon {
+        font-size: 60px;
+        color: #fff;
+    }
+
+    .events {
+        padding-top: 2%;
+        padding-bottom: 2%;
+        padding-left: 10%;
+        padding-right: 10%;
+        align-items: center;
+    }
+    .events-title {
+        font-weight: 800;
+        font-size: 40px;
+        color: #0f2a47;
+        padding-bottom: 30px;
+    }
+
+    .footer {
+        padding-top:  2%;
+        padding-bottom: 2%;
+        padding-left: 10%;
+        padding-right: 10%;
+        background-color: #333;
+    }
+    .social-media {
+        font-size: 20px;
+        color: #fff;
+    }
+    .social-media:hover {
+        font-size: 20px;
+        color: #ccc;
+    }
+    .links {
+        font-size: 12px;
+        color: #fff !important;
+    }
+    .legal {
+        padding-top: 20px;
+        font-size:  12px;
+        color: #fff;
+    }
+    .calendar-container {
+        height: 100%;
+        overflow-y: scroll;
+    }
+
+    @media only screen and (max-width : 770px) {
+        .involve {
+            padding-top: 20px;
+        }
+        .intro {
+            padding: 10%;
+            min-height: 60%;
+        }
+        .expandedCol {
+            display: none;
+        }
+        .smallCol {
+            display: block;
+        }
+        .main-text-container {
+            padding: 0;
+        }
+        .main-text {
+            font-size: 20px;
+            padding-top: 30px;
+        }
+        .problem-title {
+            font-size: 26px;
+        }
+        .problem-subtitle {
+            font-size: 22px;
+        }
+        .problem-text {
+            font-size: 16px;
+        }
+    }
+</style>
+</body>
+</html>
