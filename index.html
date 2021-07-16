@@ -13,7 +13,7 @@
 </head>
 <body>
 <div class='mobile-wrapper'>
-    <div class='container-flex' style='height: 80%'>
+    <div class='container-flex' style='height: 80%; width:100%;overflow-x:hidden!important'>
         <div class="bg"></div>
         <div class="bg bg2"></div>
         <div class="bg bg3"></div>
@@ -175,11 +175,11 @@ $(document).ready(function() {
 
     body {
       margin:0;
-      overflow-x: hidden;
+      overflow-x: hidden!important;
       position: relative;
     }
     .mobile-wrapper {
-        overflow-x: hidden;
+        overflow-x: hidden!important;
     }
 
     .bg {
@@ -192,6 +192,7 @@ $(document).ready(function() {
       right:-50%;
       top:0;
       z-index:-1;
+      overflow-x: hidden!important;
     }
 
     .bg2 {
