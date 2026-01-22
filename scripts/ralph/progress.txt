@@ -1121,3 +1121,31 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - Prop positions: (14, 0, 8) places toolbox in front-right area near golf bag (16, 0, 10)
 
 ---
+
+## 2026-01-22 - US-048
+- What was implemented:
+  - Created js/entities/workbench.js with voxel-style workbench prop
+  - Workbench positioned at (-14, 0, 8) - opposite side from toolbox
+  - Chunky wooden table top (2.0 x 0.15 x 1.0 units) using woodMaterial
+  - 4 dark wood box legs (0.15 x 0.925 x 0.15 units) at corners
+  - Lower shelf between legs for visual interest and structural look
+  - Tools on top (all BoxGeometry for voxel aesthetic):
+    - Wrench: metal gray handle + head, angled placement
+    - Hammer: red handle + metal gray head with outline
+    - Screwdriver: yellow handle + metal gray shaft
+    - Parts box: small metal container in corner
+  - All major parts have black inverted hull outlines using addOutlineToMesh()
+  - Collision box registered with registerCollisionBox() for robot collision
+  - Integrated into main.js: import createWorkbench, call createWorkbench(scene)
+- Files changed:
+  - js/entities/workbench.js (new file - complete workbench visual design)
+  - js/main.js (import and create workbench)
+- **Learnings for future iterations:**
+  - Follow toolbox.js/golf-bag.js pattern for standalone props
+  - Workbench at (-14, 0, 8) is opposite from toolbox at (14, 0, 8) - mirrors placement
+  - Table height at Y=1.0 allows tools to be positioned at tableY + tableHeight/2 + small offset
+  - Tool placement uses rotation.y for natural angled look on table surface
+  - Lower shelf adds structural detail (shelf positioned at Y=0.25 between legs)
+  - darkWoodMaterial for legs distinguishes from lighter woodMaterial table top
+
+---
