@@ -19,6 +19,7 @@ import { createCertifications } from './entities/certifications.js';
 import { createMusicPosters } from './entities/music-posters.js';
 import { createEntertainmentShelf } from './entities/entertainment-shelf.js';
 import { createGolfBag } from './entities/golf-bag.js';
+import { createCatanTiles } from './entities/catan-tiles.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
@@ -139,6 +140,9 @@ async function init() {
 
     // Create golf bag prop (US-040)
     createGolfBag(scene);
+
+    // Create Catan tiles prop (US-041)
+    createCatanTiles(scene);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');
