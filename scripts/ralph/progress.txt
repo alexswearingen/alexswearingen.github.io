@@ -1,0 +1,78 @@
+# Ralph Progress Log
+Started: Thu Jan 22 00:07:17 CST 2026
+
+## Codebase Patterns
+- Use ES6 module imports/exports - all JS files are modules loaded via `<script type="module">`
+- Three.js r160 loaded via import maps in index.html, import as `import * as THREE from 'three'`
+- Three.js addons (EffectComposer, passes, etc.) imported from `three/addons/` path
+- Constants defined in js/core/constants.js - use these for all magic numbers
+- Content data (work history, skills, etc.) lives in js/data/content.js
+- HTML validation: all buttons need `type="button"`, headings need content
+- Use `let` for module-level exports that need reassignment in init functions
+
+---
+
+## 2026-01-22 - US-003
+- What was implemented:
+  - Complete Three.js rendering pipeline in js/core/engine.js
+  - WebGLRenderer with antialias:true, shadows enabled (PCFSoftShadowMap)
+  - PerspectiveCamera positioned for isometric-style view using CAMERA constants
+  - EffectComposer with RenderPass and OutlinePass for cel-shading outlines
+  - OutlinePass configured with edgeStrength:3, black outlines (OUTLINE constants)
+  - DirectionalLight with 2048x2048 shadow mapping covering full garage
+  - AmbientLight for base illumination
+  - Window resize handling for responsive canvas
+  - All components exported: scene, camera, renderer, composer, outlinePass
+- Files changed:
+  - js/core/engine.js (complete implementation)
+- **Learnings for future iterations:**
+  - Three.js post-processing addons imported from `three/addons/postprocessing/`
+  - Use `let` for module-level exports that get reassigned in init function
+  - Shadow camera bounds should be slightly larger than scene to avoid edge clipping
+  - OutlinePass needs resolution Vector2, must be updated on window resize
+  - Shadow bias of -0.0005 helps reduce shadow acne artifacts
+
+---
+
+## 2026-01-22 - US-002
+- What was implemented:
+  - Implemented createToonMaterial(color) factory function in js/core/materials.js
+  - Created 3-step gradient ramp using THREE.DataTexture with NearestFilter for crisp toon shading
+  - Exported named material presets: concreteMaterial, metalMaterial, woodMaterial, wallMaterial
+  - Created createAccentMaterial(hue) function for station color themes
+  - Added bonus features: emissive material variants, robot materials, pre-made station accent materials
+- Files changed:
+  - js/core/materials.js (complete implementation)
+- **Learnings for future iterations:**
+  - Use `npx esbuild file.js --bundle --format=esm --outfile=/dev/null --external:three` for syntax checking ES modules
+  - THREE.DataTexture with RedFormat works for single-channel gradient ramps
+  - Shared gradient map instance across all toon materials saves memory
+  - MeshToonMaterial.gradientMap controls the "step" boundaries for cel-shading
+
+---
+
+## 2026-01-22 - US-001
+- What was implemented:
+  - Created new modular directory structure: js/core/, js/entities/, js/systems/, js/data/
+  - Archived legacy Bootstrap portfolio to archive/index-legacy.html
+  - Created index.html with Three.js r160 via CDN import maps
+  - Created js/core/constants.js with all configuration values
+  - Created js/data/content.js with complete work history (Brokk AI, Revojam, LoanScout, Web3)
+  - Created placeholder modules for future stories
+  - Added CSS files for main styles and UI components
+- Files changed:
+  - index.html (complete rewrite)
+  - archive/index-legacy.html (new - preserved old)
+  - css/main.css, css/ui.css (new)
+  - js/core/constants.js, engine.js, loop.js, materials.js (new)
+  - js/data/content.js (new)
+  - js/entities/garage.js, robot.js, station.js (new)
+  - js/systems/audio.js, collision.js, controls.js, ui.js (new)
+  - js/main.js (new)
+- **Learnings for future iterations:**
+  - Master branch had inline styles/scripts, no separate js/ or css/ directories to archive
+  - HTML validation via `npx html-validate` catches button types and empty headings
+  - Node --check doesn't work for ES modules without package.json type:module - use browser testing
+  - Import maps in HTML allow clean `import from 'three'` syntax
+
+---
