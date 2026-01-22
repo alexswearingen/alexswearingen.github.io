@@ -203,3 +203,19 @@ US-001 through US-061 completed. See git history for details.
   - hideAudioToggle/showAudioToggle exported for use when switching between 3D and resume views
   - Browser caching can be aggressive - may need to restart Chrome with fresh profile when testing module changes
 ---
+
+## 2026-01-22 - US-063
+- What was implemented: Procedural sound effects using Web Audio API
+- Files changed:
+  - js/systems/audio.js (modified - added ambient hum, footstep throttling, adjusted volumes)
+  - js/systems/controls.js (modified - added playFootstep call on movement)
+  - js/systems/ui.js (modified - added playUIClick calls on modal open/close)
+- **Learnings for future iterations:**
+  - Footstep throttling uses performance.now() (250ms interval) to prevent overlapping sounds
+  - Ambient hum uses two detuned oscillators (60Hz + 62Hz) for richer sound than single oscillator
+  - Footstep sound: noise burst with decay envelope, 800Hz lowpass filter, 0.08 gain for subtle effect
+  - UI click: 880Hz sine oscillator with exponential decay envelope
+  - Ambient hum gain at 0.015 is barely perceptible but adds atmosphere when audio enabled
+  - All sounds connect through masterGain node which is controlled by mute toggle
+  - startAmbientHum() is called once during AudioContext initialization, not on every toggle
+---
