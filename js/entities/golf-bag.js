@@ -15,6 +15,7 @@
 
 import * as THREE from 'three';
 import { createToonMaterial } from '../core/materials.js';
+import { registerCollisionBox } from '../systems/collision.js';
 
 // Outline scale factor for inverted hull technique
 const OUTLINE_SCALE = 1.05;
@@ -180,6 +181,15 @@ export function createGolfBag(scene) {
 
     // Store reference
     golfBag = group;
+
+    // Register collision box for the golf bag
+    // Note: Golf bag at (16, 0, 10) is leaning, so collision box is slightly larger to account for tilt
+    registerCollisionBox('golfBag', {
+        x: 16,
+        z: 10,
+        width: 1.0,
+        depth: 0.8
+    });
 
     // Add to scene
     scene.add(group);
