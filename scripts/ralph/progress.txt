@@ -91,3 +91,17 @@ US-001 through US-061 completed. See git history for details.
   - Small details like hooks, shelf brackets, and small items on shelves add visual interest
 ---
 
+## 2026-01-22 - US-074
+- What was implemented: Wall-mounted shelves with items on left wall
+- Files changed:
+  - js/entities/wall-shelves.js (new file)
+  - js/main.js (import and createWallShelves call)
+- **Learnings for future iterations:**
+  - Left wall is at X=-20, so wall-mounted objects should be at X=-19.5
+  - For items on left wall, rotate shelves with `rotation.y = Math.PI / 2` to face into room
+  - Clustered items look better than evenly spaced - group paint cans together, boxes together
+  - Helper functions for common item types (createPaintCan, createSprayBottle, createJar) make code cleaner
+  - Using varied Z positions along the wall (-5, -8, -2) distributes visual interest
+  - Metal bracket material (0x607d8b) provides nice contrast with wood shelves (0x8b6914)
+---
+
