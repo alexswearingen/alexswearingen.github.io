@@ -879,8 +879,8 @@
         "Typecheck passes"
       ],
       "priority": 49,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - Created js/entities/shelving-unit.js with voxel-style metal shelving: 4 corner posts, horizontal braces, 4 shelf levels, 12 cardboard boxes with tape details. Collision box registered. All parts have inverted hull outlines. Verified visually with Playwright."
     },
     {
       "id": "US-050",

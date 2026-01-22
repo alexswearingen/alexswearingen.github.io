@@ -1149,3 +1149,31 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - darkWoodMaterial for legs distinguishes from lighter woodMaterial table top
 
 ---
+
+## 2026-01-22 - US-049
+- What was implemented:
+  - Created js/entities/shelving-unit.js with voxel-style metal storage shelving
+  - Metal frame with 4 corner posts (vertical box geometry) at (16, 0, -5)
+  - 2 horizontal cross braces on back for industrial aesthetic
+  - 4 shelf levels (metal surfaces at Y = 0.05, 0.65, 1.3, 1.95)
+  - 12 cardboard boxes of various sizes distributed across shelves:
+    - 2 large boxes on bottom shelf
+    - 3 medium boxes on second shelf
+    - 3 boxes (2 small, 1 medium) on third shelf
+    - 4 small boxes on top shelf
+  - createCardboardBox() helper function with optional packing tape stripe detail
+  - Collision box registered with registerCollisionBox() for robot collision
+  - All major parts have black inverted hull outlines using addOutlineToMesh()
+  - Integrated into main.js: import createShelvingUnit, call createShelvingUnit(scene)
+- Files changed:
+  - js/entities/shelving-unit.js (new file - complete shelving unit visual design)
+  - js/main.js (import and create shelving unit)
+- **Learnings for future iterations:**
+  - Follow toolbox.js pattern for standalone props with collision
+  - Shelving position (16, 0, -5) places it on the right side toward the back of garage
+  - Box placement: larger boxes on lower shelves, smaller on top (realistic storage pattern)
+  - createCardboardBox() helper allows reusable box creation with optional tape detail
+  - Tape stripe adds realism without much geometry cost (thin box on top)
+  - Frame dimensions: 2.0 wide x 2.4 high x 0.6 deep with 0.06 thick frame members
+
+---
