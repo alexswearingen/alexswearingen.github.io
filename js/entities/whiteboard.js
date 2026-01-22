@@ -6,6 +6,9 @@
 
 import * as THREE from 'three';
 import { woodMaterial, createToonMaterial } from '../core/materials.js';
+import { SKILLS } from '../data/content.js';
+import { INTERACTION } from '../core/constants.js';
+import { stations } from './station.js';
 
 // Outline scale factor - matches robot.js for consistent style
 const OUTLINE_SCALE = 1.06;
@@ -176,6 +179,54 @@ export function createWhiteboard(scene) {
 
     // Store module-level reference for interaction system
     whiteboard = group;
+
+    // === INTERACTION SETUP ===
+    // Build skills content data from SKILLS in content.js
+    // Format skills by category for display in modal
+    const skillsList = [];
+    const categories = SKILLS.categories;
+
+    // Languages
+    if (categories.languages) {
+        skillsList.push(`${categories.languages.name}: ${categories.languages.items.join(', ')}`);
+    }
+    // Frontend
+    if (categories.frontend) {
+        skillsList.push(`${categories.frontend.name}: ${categories.frontend.items.join(', ')}`);
+    }
+    // Backend
+    if (categories.backend) {
+        skillsList.push(`${categories.backend.name}: ${categories.backend.items.join(', ')}`);
+    }
+    // Cloud
+    if (categories.cloud) {
+        skillsList.push(`${categories.cloud.name}: ${categories.cloud.items.join(', ')}`);
+    }
+    // Database
+    if (categories.database) {
+        skillsList.push(`${categories.database.name}: ${categories.database.items.join(', ')}`);
+    }
+    // Tools
+    if (categories.tools) {
+        skillsList.push(`${categories.tools.name}: ${categories.tools.items.join(', ')}`);
+    }
+
+    // Set up userData for interaction system (same pattern as stations)
+    group.userData = {
+        id: 'whiteboard-skills',
+        contentData: {
+            title: SKILLS.title,
+            subtitle: SKILLS.subtitle,
+            description: 'A comprehensive overview of my technical expertise across different domains.',
+            achievements: skillsList
+        },
+        isStation: true,  // Treat as station for interaction system
+        interactionRadius: INTERACTION.RADIUS
+    };
+
+    // Register whiteboard with the stations array for proximity detection
+    // This allows checkStationProximity() to detect it
+    stations.push(group);
 
     // Add to scene
     scene.add(group);
