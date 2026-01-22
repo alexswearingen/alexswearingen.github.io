@@ -26,6 +26,7 @@ import { createToolbox } from './entities/toolbox.js';
 import { createWorkbench } from './entities/workbench.js';
 import { createShelvingUnit } from './entities/shelving-unit.js';
 import { createDustParticles, updateDustParticles } from './entities/dust-particles.js';
+import { createPegboard } from './entities/pegboard.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 import { initMinimap, updateMinimap } from './systems/minimap.js';
@@ -174,6 +175,9 @@ async function init() {
 
     // Create shelving unit prop (US-049)
     createShelvingUnit(scene);
+
+    // Create pegboard on back wall (US-073)
+    createPegboard(scene);
 
     // Create dust particles for atmosphere (US-051)
     createDustParticles(scene);
