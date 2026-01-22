@@ -16,6 +16,7 @@ import { createLoanscoutStation, updateLoanscoutAnimation } from './entities/loa
 import { createWeb3Station, updateWeb3Animation } from './entities/web3-station.js';
 import { createWhiteboard } from './entities/whiteboard.js';
 import { createCertifications } from './entities/certifications.js';
+import { createMusicPosters } from './entities/music-posters.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
@@ -127,6 +128,9 @@ async function init() {
 
     // Create certifications display on back wall (US-034)
     createCertifications(scene);
+
+    // Create music posters on left wall (US-036)
+    createMusicPosters(scene);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');
