@@ -11,6 +11,7 @@ import { ROBOT } from './core/constants.js';
 import { initControls, isInteractKeyPressed } from './systems/controls.js';
 import { checkStationProximity } from './entities/station.js';
 import { createBrokkStation, updateBrokkAnimation } from './entities/brokk-station.js';
+import { createRevojamStation, updateRevojamAnimation } from './entities/revojam-station.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
@@ -95,6 +96,13 @@ async function init() {
 
     // Register Brokk station animation with game loop
     addUpdateCallback(updateBrokkAnimation);
+
+    // Create Revojam station with visual design
+    const revojamStation = createRevojamStation();
+    scene.add(revojamStation);
+
+    // Register Revojam station animation with game loop
+    addUpdateCallback(updateRevojamAnimation);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');
