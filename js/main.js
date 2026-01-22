@@ -32,7 +32,7 @@ import { createAppliances } from './entities/appliances.js';
 import { createWallDecorations } from './entities/wall-clock.js';
 import { createCardboardBoxes } from './entities/cardboard-boxes.js';
 import { createHobbyFurniture } from './entities/hobby-furniture.js';
-import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
+import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen, hideAudioToggle, showAudioToggle } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 import { initMinimap, updateMinimap } from './systems/minimap.js';
 import { initAudio } from './systems/audio.js';
@@ -440,6 +440,9 @@ function showResume() {
         minimap.style.display = 'none';
     }
 
+    // Hide audio toggle in resume view
+    hideAudioToggle();
+
     // Populate resume content from content.js data
     populateResume();
 
@@ -467,6 +470,9 @@ function hideResume() {
     if (minimap) {
         minimap.style.display = 'block';
     }
+
+    // Show audio toggle when returning to 3D view
+    showAudioToggle();
 
     // Start the game loop if not already running
     startLoop();

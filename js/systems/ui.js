@@ -1,13 +1,16 @@
 /**
  * UI management
- * Modals, prompts, minimap
+ * Modals, prompts, minimap, audio toggle
  */
+
+import { toggleMute, isMutedState } from './audio.js';
 
 // Track modal state for disabling robot movement
 export let isModalOpen = false;
 
 // Cached DOM elements for performance
 let modalOverlay = null;
+let audioToggleBtn = null;
 
 /**
  * Convert URLs and email addresses in text to clickable links
@@ -91,6 +94,19 @@ export function initUI() {
             hideModal();
         }
     });
+
+    // Set up audio toggle button
+    audioToggleBtn = document.getElementById('audio-toggle');
+    if (audioToggleBtn) {
+        // Update button state to match initial audio state
+        updateAudioToggleUI();
+
+        // Add click handler to toggle audio
+        audioToggleBtn.addEventListener('click', () => {
+            toggleMute();
+            updateAudioToggleUI();
+        });
+    }
 }
 
 export function showInteractionPrompt() {
@@ -164,4 +180,36 @@ export function hideModal() {
 
 export function updateMinimap(robotPosition) {
     // Placeholder
+}
+
+/**
+ * Update audio toggle button visual state
+ * Adds/removes 'audio-muted' class based on current audio state
+ */
+function updateAudioToggleUI() {
+    if (!audioToggleBtn) return;
+
+    if (isMutedState()) {
+        audioToggleBtn.classList.add('audio-muted');
+    } else {
+        audioToggleBtn.classList.remove('audio-muted');
+    }
+}
+
+/**
+ * Hide audio toggle button (used when showing resume view)
+ */
+export function hideAudioToggle() {
+    if (audioToggleBtn) {
+        audioToggleBtn.classList.add('hidden');
+    }
+}
+
+/**
+ * Show audio toggle button (used when returning to 3D view)
+ */
+export function showAudioToggle() {
+    if (audioToggleBtn) {
+        audioToggleBtn.classList.remove('hidden');
+    }
 }
