@@ -24,6 +24,7 @@ import { createContactSign } from './entities/contact-sign.js';
 import { createCeilingFan, updateCeilingFanAnimation } from './entities/ceiling-fan.js';
 import { createToolbox } from './entities/toolbox.js';
 import { createWorkbench } from './entities/workbench.js';
+import { createShelvingUnit } from './entities/shelving-unit.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 
@@ -163,6 +164,9 @@ async function init() {
 
     // Create workbench prop (US-048)
     createWorkbench(scene);
+
+    // Create shelving unit prop (US-049)
+    createShelvingUnit(scene);
 
     // Initialize debug controls (keyboard shortcuts for camera views)
     initDebugControls();
