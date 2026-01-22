@@ -23,6 +23,7 @@ import { createCatanTiles } from './entities/catan-tiles.js';
 import { createContactSign } from './entities/contact-sign.js';
 import { createCeilingFan, updateCeilingFanAnimation } from './entities/ceiling-fan.js';
 import { createToolbox } from './entities/toolbox.js';
+import { createWorkbench } from './entities/workbench.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 
@@ -159,6 +160,9 @@ async function init() {
 
     // Create toolbox prop (US-047)
     createToolbox(scene);
+
+    // Create workbench prop (US-048)
+    createWorkbench(scene);
 
     // Initialize debug controls (keyboard shortcuts for camera views)
     initDebugControls();
