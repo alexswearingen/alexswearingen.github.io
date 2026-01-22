@@ -186,3 +186,249 @@ html, body {
     z-index: 500;
     padding: 2rem;
 }
+
+/* Resume container - max width and centered */
+.resume-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* Back to 3D button */
+.back-button {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6c5ce7;
+    background: transparent;
+    border: 2px solid #6c5ce7;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    margin-bottom: 2rem;
+}
+
+.back-button:hover {
+    background-color: #6c5ce7;
+    color: #ffffff;
+}
+
+/* Resume header */
+.resume-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.resume-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 0.5rem;
+}
+
+.resume-title {
+    font-size: 1.25rem;
+    color: #6c5ce7;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.resume-location {
+    font-size: 1rem;
+    color: #666666;
+}
+
+/* Resume sections */
+.resume-section {
+    margin-bottom: 2rem;
+}
+
+.resume-section h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #6c5ce7;
+}
+
+.resume-section p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #333333;
+}
+
+/* Experience entries */
+.experience-entry {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.experience-entry:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.experience-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.experience-company {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.experience-dates {
+    font-size: 0.9rem;
+    color: #666666;
+}
+
+.experience-role {
+    font-size: 1rem;
+    color: #6c5ce7;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.experience-description {
+    font-size: 0.95rem;
+    color: #444444;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+}
+
+.experience-achievements {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.experience-achievements li {
+    position: relative;
+    padding-left: 1.25rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    color: #555555;
+    line-height: 1.5;
+}
+
+.experience-achievements li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #6c5ce7;
+    font-weight: 700;
+}
+
+/* Skills grid */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.skill-category {
+    margin-bottom: 0.5rem;
+}
+
+.skill-category-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 0.25rem;
+}
+
+.skill-items {
+    font-size: 0.9rem;
+    color: #555555;
+    line-height: 1.5;
+}
+
+/* Certifications list */
+#resume-certifications {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#resume-certifications li {
+    margin-bottom: 0.75rem;
+}
+
+.cert-name {
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 1rem;
+}
+
+.cert-description {
+    font-size: 0.9rem;
+    color: #666666;
+}
+
+/* Contact info */
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.contact-item {
+    font-size: 0.95rem;
+}
+
+.contact-label {
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.contact-value {
+    color: #555555;
+}
+
+.contact-value a {
+    color: #0984e3;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.contact-value a:hover {
+    color: #6c5ce7;
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .resume-container {
+        padding: 0.5rem;
+    }
+
+    .resume-header h1 {
+        font-size: 2rem;
+    }
+
+    .experience-header {
+        flex-direction: column;
+    }
+
+    .experience-dates {
+        margin-top: 0.25rem;
+    }
+
+    .skills-grid,
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+}

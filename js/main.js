@@ -29,6 +29,7 @@ import { createDustParticles, updateDustParticles } from './entities/dust-partic
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 import { initMinimap, updateMinimap } from './systems/minimap.js';
+import { WORK_HISTORY, SKILLS, CERTIFICATIONS, CONTACT, ABOUT } from './data/content.js';
 
 // Track the currently nearby station for interaction
 let nearbyStation = null;
@@ -240,6 +241,12 @@ async function init() {
     if (skipButton) {
         skipButton.addEventListener('click', showResume);
     }
+
+    // Back to 3D button in resume section
+    const backTo3DButton = document.getElementById('back-to-3d');
+    if (backTo3DButton) {
+        backTo3DButton.addEventListener('click', hideResume);
+    }
 }
 
 /**
@@ -259,12 +266,139 @@ function startExperience() {
 }
 
 /**
+ * Populate the resume section with data from content.js
+ */
+function populateResume() {
+    // Header info (ABOUT data)
+    const nameEl = document.getElementById('resume-name');
+    const titleEl = document.getElementById('resume-title');
+    const locationEl = document.getElementById('resume-location');
+    const summaryEl = document.getElementById('resume-summary');
+
+    if (nameEl) nameEl.textContent = ABOUT.name;
+    if (titleEl) titleEl.textContent = ABOUT.title;
+    if (locationEl) locationEl.textContent = ABOUT.location;
+    if (summaryEl) summaryEl.textContent = ABOUT.summary;
+
+    // Experience section (WORK_HISTORY data)
+    const experienceContainer = document.getElementById('resume-experience');
+    if (experienceContainer) {
+        experienceContainer.innerHTML = '';
+
+        // Order: Brokk AI first (current), then by date (reverse chronological)
+        const workOrder = ['brokkAi', 'loanScout', 'revojam', 'web3'];
+
+        workOrder.forEach(key => {
+            const job = WORK_HISTORY[key];
+            if (!job) return;
+
+            const entry = document.createElement('div');
+            entry.className = 'experience-entry';
+
+            entry.innerHTML = `
+                <div class="experience-header">
+                    <span class="experience-company">${job.title}</span>
+                    <span class="experience-dates">${job.dates}</span>
+                </div>
+                <div class="experience-role">${job.subtitle}</div>
+                <p class="experience-description">${job.description}</p>
+                <ul class="experience-achievements">
+                    ${job.achievements.map(a => `<li>${a}</li>`).join('')}
+                </ul>
+            `;
+
+            experienceContainer.appendChild(entry);
+        });
+    }
+
+    // Skills section
+    const skillsContainer = document.getElementById('resume-skills');
+    if (skillsContainer) {
+        skillsContainer.innerHTML = '';
+
+        const skillsGrid = document.createElement('div');
+        skillsGrid.className = 'skills-grid';
+
+        Object.values(SKILLS.categories).forEach(category => {
+            const skillDiv = document.createElement('div');
+            skillDiv.className = 'skill-category';
+            skillDiv.innerHTML = `
+                <div class="skill-category-name">${category.name}</div>
+                <div class="skill-items">${category.items.join(', ')}</div>
+            `;
+            skillsGrid.appendChild(skillDiv);
+        });
+
+        skillsContainer.appendChild(skillsGrid);
+    }
+
+    // Certifications section
+    const certsContainer = document.getElementById('resume-certifications');
+    if (certsContainer) {
+        certsContainer.innerHTML = '';
+
+        CERTIFICATIONS.items.forEach(cert => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span class="cert-name">${cert.name}</span>
+                <span class="cert-description"> — ${cert.description}</span>
+            `;
+            certsContainer.appendChild(li);
+        });
+    }
+
+    // Contact section
+    const contactContainer = document.getElementById('resume-contact');
+    if (contactContainer) {
+        contactContainer.innerHTML = '';
+
+        const contactGrid = document.createElement('div');
+        contactGrid.className = 'contact-grid';
+
+        // Email
+        contactGrid.innerHTML += `
+            <div class="contact-item">
+                <span class="contact-label">Email: </span>
+                <span class="contact-value"><a href="mailto:${CONTACT.email}">${CONTACT.email}</a></span>
+            </div>
+        `;
+
+        // LinkedIn
+        contactGrid.innerHTML += `
+            <div class="contact-item">
+                <span class="contact-label">LinkedIn: </span>
+                <span class="contact-value"><a href="${CONTACT.linkedin}" target="_blank" rel="noopener noreferrer">linkedin.com/in/alex-swearingen</a></span>
+            </div>
+        `;
+
+        // GitHub
+        contactGrid.innerHTML += `
+            <div class="contact-item">
+                <span class="contact-label">GitHub: </span>
+                <span class="contact-value"><a href="${CONTACT.github}" target="_blank" rel="noopener noreferrer">github.com/alexswearingen</a></span>
+            </div>
+        `;
+
+        // Location
+        contactGrid.innerHTML += `
+            <div class="contact-item">
+                <span class="contact-label">Location: </span>
+                <span class="contact-value">${CONTACT.location}</span>
+            </div>
+        `;
+
+        contactContainer.appendChild(contactGrid);
+    }
+}
+
+/**
  * Show the resume/fallback view
  */
 function showResume() {
     const loadingScreen = document.getElementById('loading-screen');
     const resumeSection = document.getElementById('resume-section');
     const canvasContainer = document.getElementById('canvas-container');
+    const minimap = document.getElementById('minimap');
 
     if (loadingScreen) {
         loadingScreen.style.display = 'none';
@@ -274,9 +408,40 @@ function showResume() {
         canvasContainer.style.display = 'none';
     }
 
+    if (minimap) {
+        minimap.style.display = 'none';
+    }
+
+    // Populate resume content from content.js data
+    populateResume();
+
     if (resumeSection) {
         resumeSection.classList.remove('hidden');
     }
+}
+
+/**
+ * Hide the resume and return to 3D experience
+ */
+function hideResume() {
+    const resumeSection = document.getElementById('resume-section');
+    const canvasContainer = document.getElementById('canvas-container');
+    const minimap = document.getElementById('minimap');
+
+    if (resumeSection) {
+        resumeSection.classList.add('hidden');
+    }
+
+    if (canvasContainer) {
+        canvasContainer.style.display = 'block';
+    }
+
+    if (minimap) {
+        minimap.style.display = 'block';
+    }
+
+    // Start the game loop if not already running
+    startLoop();
 }
 
 // Initialize when DOM is ready
