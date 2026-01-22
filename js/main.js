@@ -29,6 +29,7 @@ import { createDustParticles, updateDustParticles } from './entities/dust-partic
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 import { initMinimap, updateMinimap } from './systems/minimap.js';
+import { initAudio } from './systems/audio.js';
 import { WORK_HISTORY, SKILLS, CERTIFICATIONS, CONTACT, ABOUT } from './data/content.js';
 
 // Track the currently nearby station for interaction
@@ -80,6 +81,9 @@ function updateInteraction(deltaTime) {
 async function init() {
     // Initialize UI event listeners (modal close button, overlay click, escape key)
     initUI();
+
+    // Initialize audio system (sets up AudioContext on first user interaction)
+    initAudio();
 
     // Initialize the Three.js engine
     initEngine();
