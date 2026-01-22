@@ -9,7 +9,8 @@ import { createFloor, createWalls, createCeiling } from './entities/garage.js';
 import { createRobot, robot } from './entities/robot.js';
 import { ROBOT } from './core/constants.js';
 import { initControls, isInteractKeyPressed } from './systems/controls.js';
-import { checkStationProximity, createStation } from './entities/station.js';
+import { checkStationProximity } from './entities/station.js';
+import { createBrokkStation } from './entities/brokk-station.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
@@ -88,20 +89,8 @@ async function init() {
     // Initialize interaction system (proximity check for stations)
     initInteraction();
 
-    // Create placeholder stations for testing proximity detection
-    // These will be replaced with actual station visuals in US-020+
-    // Using positions from STATION_POSITIONS in constants.js
-    const brokkStation = createStation({
-        id: 'brokk-station',
-        position: { x: 0, z: -12 },  // STATION_POSITIONS.BROKK
-        size: { width: 4, depth: 3 },
-        contentData: {
-            title: 'Brokk AI',
-            subtitle: 'Software Engineer → Technical Product Marketing',
-            description: 'AI-powered development tools company.',
-            dates: '2025 - Present'
-        }
-    });
+    // Create Brokk AI station with visual design
+    const brokkStation = createBrokkStation();
     scene.add(brokkStation);
 
     // Hide loading text, show start button
