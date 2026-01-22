@@ -10,7 +10,7 @@ import { createRobot, robot } from './entities/robot.js';
 import { ROBOT } from './core/constants.js';
 import { initControls, isInteractKeyPressed } from './systems/controls.js';
 import { checkStationProximity } from './entities/station.js';
-import { createBrokkStation } from './entities/brokk-station.js';
+import { createBrokkStation, updateBrokkAnimation } from './entities/brokk-station.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
@@ -92,6 +92,9 @@ async function init() {
     // Create Brokk AI station with visual design
     const brokkStation = createBrokkStation();
     scene.add(brokkStation);
+
+    // Register Brokk station animation with game loop
+    addUpdateCallback(updateBrokkAnimation);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');

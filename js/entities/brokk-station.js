@@ -48,9 +48,15 @@ const screenGlowMaterial = new THREE.MeshBasicMaterial({
     opacity: 0.3
 });
 
-// Export reference to hologram for animation
+// Export references for animation
 export let brokkHologram = null;
+export let brokkInnerCube = null;
 export let brokkStation = null;
+export let brokkLeftGlow = null;
+export let brokkRightGlow = null;
+
+// Animation state
+let animationTime = 0;
 
 /**
  * Helper function to add an outline mesh using inverted hull technique
@@ -157,10 +163,11 @@ export function createBrokkStation() {
     group.add(leftScreen);
 
     // Left screen glow overlay
-    const leftGlow = new THREE.Mesh(monitorScreenGeometry, screenGlowMaterial);
+    const leftGlow = new THREE.Mesh(monitorScreenGeometry, screenGlowMaterial.clone());
     leftGlow.name = 'leftGlow';
     leftGlow.position.set(-0.65, monitorY, -0.3 + monitorDepth / 2 + 0.03);
     group.add(leftGlow);
+    brokkLeftGlow = leftGlow;
 
     // Right monitor
     const rightMonitor = new THREE.Mesh(monitorBodyGeometry, metalMaterial);
@@ -178,10 +185,11 @@ export function createBrokkStation() {
     group.add(rightScreen);
 
     // Right screen glow overlay
-    const rightGlow = new THREE.Mesh(monitorScreenGeometry, screenGlowMaterial);
+    const rightGlow = new THREE.Mesh(monitorScreenGeometry, screenGlowMaterial.clone());
     rightGlow.name = 'rightGlow';
     rightGlow.position.set(0.65, monitorY, -0.3 + monitorDepth / 2 + 0.03);
     group.add(rightGlow);
+    brokkRightGlow = rightGlow;
 
     // === KEYBOARD (Chunky box on desk) ===
     const keyboardWidth = 1.2;
@@ -225,8 +233,13 @@ export function createBrokkStation() {
     innerCube.rotation.set(Math.PI / 6, Math.PI / 4, 0);
     group.add(innerCube);
 
-    // Store hologram reference for animation
+    // Store references for animation
     brokkHologram = hologram;
+    brokkInnerCube = innerCube;
+
+    // Store the base Y position for bobbing animation
+    hologram.userData.baseY = cubeY;
+    innerCube.userData.baseY = cubeY;
 
     // === BLUE ACCENT DETAILS ===
     // Desk edge strip (blue accent)
@@ -257,4 +270,46 @@ export function getBrokkStationMeshes() {
         }
     });
     return meshes;
+}
+
+/**
+ * Update Brokk station animations
+ * Call this every frame from the game loop
+ * @param {number} deltaTime - Time since last frame in seconds
+ */
+export function updateBrokkAnimation(deltaTime) {
+    if (!brokkHologram) return;
+
+    // Accumulate time for smooth animation
+    animationTime += deltaTime;
+
+    // === HOLOGRAM ROTATION ===
+    // Rotate on Y axis for spinning effect
+    brokkHologram.rotation.y += ANIMATION.HOLOGRAM_ROTATION;
+
+    // Inner cube rotates slightly faster in opposite direction for visual interest
+    if (brokkInnerCube) {
+        brokkInnerCube.rotation.y -= ANIMATION.HOLOGRAM_ROTATION * 1.5;
+    }
+
+    // === HOLOGRAM BOBBING ===
+    // Gentle up/down motion using sine wave
+    const bobOffset = Math.sin(animationTime * ANIMATION.HOLOGRAM_BOB_SPEED * 60) * ANIMATION.HOLOGRAM_BOB_AMPLITUDE;
+    brokkHologram.position.y = brokkHologram.userData.baseY + bobOffset;
+
+    if (brokkInnerCube) {
+        brokkInnerCube.position.y = brokkInnerCube.userData.baseY + bobOffset;
+    }
+
+    // === MONITOR SCREEN PULSE ===
+    // Subtle opacity pulse on screen glow
+    const pulseValue = 0.25 + Math.sin(animationTime * 2) * 0.1; // Oscillate between 0.15 and 0.35
+
+    if (brokkLeftGlow && brokkLeftGlow.material) {
+        brokkLeftGlow.material.opacity = pulseValue;
+    }
+
+    if (brokkRightGlow && brokkRightGlow.material) {
+        brokkRightGlow.material.opacity = pulseValue;
+    }
 }
