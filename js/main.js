@@ -31,6 +31,7 @@ import { createWallShelves } from './entities/wall-shelves.js';
 import { createAppliances } from './entities/appliances.js';
 import { createWallDecorations } from './entities/wall-clock.js';
 import { createCardboardBoxes } from './entities/cardboard-boxes.js';
+import { createHobbyFurniture } from './entities/hobby-furniture.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 import { initMinimap, updateMinimap } from './systems/minimap.js';
@@ -194,6 +195,9 @@ async function init() {
 
     // Create cardboard boxes and clutter (US-079)
     createCardboardBoxes(scene);
+
+    // Create hobby furniture - stool and mini fridge (US-080)
+    createHobbyFurniture(scene);
 
     // Create dust particles for atmosphere (US-051)
     createDustParticles(scene);

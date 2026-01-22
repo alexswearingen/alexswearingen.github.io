@@ -58,11 +58,12 @@ export function createGolfBag(scene) {
     const group = new THREE.Group();
     group.name = 'golfBag';
 
-    // Position leaning against right wall toward front
-    group.position.set(16, 0, 10);
-    // Slight rotation/lean against wall
-    group.rotation.y = -Math.PI / 8;  // Angled slightly
-    group.rotation.z = 0.15;           // Leaning tilt
+    // Position near Catan table in hobby zone (consolidated hobby area US-080)
+    // Moved from (16, 0, 10) to be adjacent to Catan table at (17, 0, 3)
+    group.position.set(15, 0, 5);
+    // Slight rotation/lean toward hobby area
+    group.rotation.y = -Math.PI / 6;  // Angled to face into hobby corner
+    group.rotation.z = 0.12;           // Leaning tilt
 
     // === MAIN BAG BODY ===
     // Tall rectangular box body with chunky proportions
@@ -177,10 +178,10 @@ export function createGolfBag(scene) {
     golfBag = group;
 
     // Register collision box for the golf bag
-    // Note: Golf bag at (16, 0, 10) is leaning, so collision box is slightly larger to account for tilt
+    // Note: Golf bag at (15, 0, 5) is leaning, so collision box is slightly larger to account for tilt
     registerCollisionBox('golfBag', {
-        x: 16,
-        z: 10,
+        x: 15,
+        z: 5,
         width: 1.0,
         depth: 0.8
     });

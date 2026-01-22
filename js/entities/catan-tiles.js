@@ -157,13 +157,13 @@ export function createCatanTiles(scene) {
     // Add to scene
     scene.add(group);
 
-    // === HOBBY AREA INTERACTION (US-042) ===
+    // === HOBBY AREA INTERACTION (US-042, updated US-080) ===
     // Create an invisible interaction point for the hobby area
-    // This covers both the golf bag (16, 0, 10) and Catan tiles (17, 0, 3)
-    // Interaction point placed between the two props
+    // Covers golf bag (15, 0, 5), Catan tiles (17, 0, 3), and entertainment shelf (19, 4, 0)
+    // Interaction point placed at center of consolidated hobby zone
     const hobbyInteractionGroup = new THREE.Group();
     hobbyInteractionGroup.name = 'hobbyArea';
-    hobbyInteractionGroup.position.set(16.5, 0, 6.5);
+    hobbyInteractionGroup.position.set(17, 0, 3);
 
     // Set up interaction data using HOBBIES from content.js
     hobbyInteractionGroup.userData = {
