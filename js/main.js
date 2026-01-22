@@ -20,6 +20,7 @@ import { createMusicPosters } from './entities/music-posters.js';
 import { createEntertainmentShelf } from './entities/entertainment-shelf.js';
 import { createGolfBag } from './entities/golf-bag.js';
 import { createCatanTiles } from './entities/catan-tiles.js';
+import { createContactSign } from './entities/contact-sign.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
@@ -143,6 +144,9 @@ async function init() {
 
     // Create Catan tiles prop (US-041)
     createCatanTiles(scene);
+
+    // Create contact sign near garage entrance (US-043)
+    createContactSign(scene);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');
