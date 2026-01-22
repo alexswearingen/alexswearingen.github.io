@@ -260,8 +260,8 @@
         "Typecheck passes"
       ],
       "priority": 61,
-      "passes": false,
-      "notes": "Reference image shows washer/dryer - common garage items"
+      "passes": true,
+      "notes": "Completed - washer, dryer, and utility sink at (17, 0, -15) with collision boxes"
     },
     {
       "id": "US-076",

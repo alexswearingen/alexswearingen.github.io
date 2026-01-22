@@ -105,3 +105,17 @@ US-001 through US-061 completed. See git history for details.
   - Metal bracket material (0x607d8b) provides nice contrast with wood shelves (0x8b6914)
 ---
 
+## 2026-01-22 - US-075
+- What was implemented: Appliance area with washer, dryer, and utility sink
+- Files changed:
+  - js/entities/appliances.js (new file)
+  - js/main.js (import and createAppliances call)
+- **Learnings for future iterations:**
+  - Right wall is at X=20, so appliances at X=17 keep sink within bounds (max X ~18.85)
+  - Appliance details: washer has circular door frame with inner "glass", dryer has solid door with handle
+  - Control panels use darker gray material with smaller knobs/buttons for detail
+  - Utility sink uses metalMaterial (0x808890) with legs and backsplash for industrial look
+  - Each appliance needs its own collision box registered separately (washer, dryer, utilitySink)
+  - Position adjustments may be needed to avoid clipping - always verify collision bounds vs wall limits
+---
+
