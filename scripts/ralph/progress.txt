@@ -133,3 +133,14 @@ US-001 through US-061 completed. See git history for details.
   - Collision box width needs to increase to account for drawer unit extending past table top
 ---
 
+
+## 2026-01-22 - US-077
+- What was implemented: Repositioned work stations from spread-out layout to compact 2x2 grid
+- Files changed:
+  - js/core/constants.js (updated STATION_POSITIONS)
+- **Learnings for future iterations:**
+  - Station positions flow from STATION_POSITIONS constant through createStation factory - collision boxes update automatically
+  - 2x2 grid layout at positions (-8,-12), (-2,-12), (-8,-6), (-2,-6) creates tight cluster with ~6 unit spacing
+  - Browser caching can prevent changes from appearing - may need to kill Chrome and restart with fresh profile
+  - Zone concept: work zone (back-left), hobby zone (right side), entrance (front) improves layout cohesion
+---
