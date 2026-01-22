@@ -726,3 +726,259 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - The acceptance criteria "Add station meshes to outlinePass.selectedObjects" is outdated - use inverted hull instead
 
 ---
+
+## 2026-01-22 - US-031
+- What was implemented:
+  - Verified Web3 station animation was already fully implemented in US-029 (visual design)
+  - updateWeb3Animation() function in web3-station.js handles all animations:
+    - Polyhedron rotates on multiple axes using ANIMATION.POLYHEDRON_ROTATION_X (0.005) and ANIMATION.POLYHEDRON_ROTATION_Y (0.007)
+    - Inner cube counter-rotates at 1.3x speed for visual depth
+    - Bobbing animation via sine wave with 0.08 unit amplitude
+    - 3 orbiting cubes with staggered orbitPhase, vertical wobble, and spin
+    - Opacity pulsing on main polyhedron (0.75-0.85 range)
+  - Animation was already registered in main.js: addUpdateCallback(updateWeb3Animation)
+  - Verified via Playwright: compound rotation visible, orbiting cubes moving, animation feels techy and dynamic
+  - Esbuild syntax checks pass for both web3-station.js and main.js
+- Files changed:
+  - scripts/ralph/prd.json (marked US-031 as passes: true)
+- **Learnings for future iterations:**
+  - Animation stories (US-022, US-025, US-028, US-031) are often already implemented in visual design stories
+  - Pattern: visual design story creates animation function + exports, main.js registers with addUpdateCallback()
+  - US-029 included complete animation implementation - always check existing code before implementing
+  - Compound rotation uses two separate rotation axis updates for mesmerizing effect
+  - Orbiting cubes create particle-like effect around main element
+
+---
+
+## 2026-01-22 - US-032
+- What was implemented:
+  - Created js/entities/whiteboard.js with skills whiteboard visual design
+  - Whiteboard surface: 8x5 unit BoxGeometry with off-white/cream color (0xf5f5f0)
+  - Dark wood frame around all 4 edges (0x4a3728) - top, bottom, left, right pieces
+  - Marker tray at bottom of whiteboard for holding markers
+  - 3 colored markers (red, blue, green) and a black eraser on the tray
+  - All major parts have black inverted hull outlines using addOutlineToMesh pattern
+  - Positioned at (0, 6, -19) on the back wall, just in front of wall to avoid z-fighting
+  - Integrated into main.js with createWhiteboard(scene) call
+- Files changed:
+  - js/entities/whiteboard.js (new file - complete whiteboard visual design)
+  - js/main.js (import and create whiteboard)
+- **Learnings for future iterations:**
+  - Wall-mounted objects need to be slightly in front of wall (z = -19 vs wall at z = -20) to avoid z-fighting
+  - Frame pieces need different geometries for top/bottom (horizontal) vs left/right (vertical)
+  - Marker tray adds nice detail and makes whiteboard look realistic
+  - Small props like markers add character without much geometry cost
+  - US-033 will add interaction/content data to make whiteboard interactable
+
+---
+
+## 2026-01-22 - US-033
+- What was implemented:
+  - Skills whiteboard integration - registered whiteboard as interactable
+  - Imported SKILLS from content.js, INTERACTION from constants.js, and stations array from station.js
+  - Built skillsList array by iterating through SKILLS.categories (languages, frontend, backend, cloud, database, tools)
+  - Each category formatted as "CategoryName: item1, item2, item3"
+  - Set up group.userData with id, contentData (title, subtitle, description, achievements), isStation flag, interactionRadius
+  - Pushed whiteboard group to stations array for checkStationProximity() detection
+  - contentData uses SKILLS.title ("Technical Skills") and SKILLS.subtitle ("What I Work With")
+- Files changed:
+  - js/entities/whiteboard.js (added imports, interaction setup, stations registration)
+- **Learnings for future iterations:**
+  - Wall-mounted interactables work with existing station system - just push to stations array
+  - checkStationProximity() uses X and Z only - Y position (wall height) doesn't affect interaction
+  - Robot can only reach Z=-18 (boundary), whiteboard at Z=-19 is 1 unit away, within 3-unit radius
+  - Pattern for non-station interactables: set userData.isStation=true, push to stations array
+  - Skills formatted as category: items list works well for modal achievements display
+
+---
+
+## 2026-01-22 - US-034
+- What was implemented:
+  - Created js/entities/certifications.js with two certificate frame visual design
+  - Two certificate frames positioned at (-6, 5, -19) and (6, 5, -19) on back wall
+  - Each certificate: 2x1.5 unit off-white/cream surface (0xfaf8f0) with dark wood frame (0x3d2817)
+  - Frame has 4 pieces: top, bottom, left, right (same pattern as whiteboard)
+  - All parts have black inverted hull outlines using addOutlineToMesh() pattern
+  - Created createCertificateFrame(name) helper function for reusable frame creation
+  - Added separate interaction point at (0, 5, -18.5) for proximity detection
+  - Integrated into main.js: import createCertifications, call createCertifications(scene)
+- Files changed:
+  - js/entities/certifications.js (new file - complete certificate frame visual design)
+  - js/main.js (import and create certifications)
+- **Learnings for future iterations:**
+  - Reuse whiteboard pattern for wall-mounted framed objects: surface + 4 frame pieces
+  - createCertificateFrame() helper allows reusing frame code for multiple certificates
+  - For multiple objects in one interactable zone, create a separate invisible interaction point
+  - Robot boundary is Z=-18, so wall objects at Z=-19 need interaction point slightly forward
+  - US-035 will add interaction logic to display certification content in modal
+
+---
+
+## 2026-01-22 - US-035
+- What was implemented:
+  - Certifications display integration was already implemented in US-034 along with visual design
+  - Verified interaction system: interaction point at (0, 5, -18.5) registered with stations array
+  - contentData properly configured with title 'Certifications', subtitle 'Professional Credentials'
+  - achievements list includes both certifications: CompTIA A+ and AWS Cloud Practitioner
+  - Modal displays professionally with formatted certification descriptions
+  - Typecheck passes (verified with esbuild)
+  - Browser verification confirmed - navigated robot to back wall, pressed E, modal showed both certifications
+- Files changed:
+  - js/entities/certifications.js (interaction already implemented in US-034)
+- **Learnings for future iterations:**
+  - US-034 implemented both visual design AND interaction logic together (common for wall-mounted elements)
+  - CERTIFICATIONS content from data/content.js maps to contentData format: title, subtitle, items->achievements
+  - Certifications use same modal display pattern as stations - contentData.achievements shows as bulleted list
+  - Browser testing with Playwright MCP: navigate robot with W/A/S/D, press E when "Press E to interact" appears
+
+---
+
+## 2026-01-22 - US-036
+- What was implemented:
+  - Created js/entities/music-posters.js with 4 poster frames representing favorite artists
+  - Poster dimensions: 1.2x1.6 units each, positioned in 2x2 grid
+  - Group positioned at (-19, 6, -5) on the left wall
+  - Each poster has distinct color scheme with abstract colored stripes:
+    - Talking Heads: red/yellow/blue stripes on off-white background (new wave)
+    - TWRP: pink/cyan/purple stripes on dark purple background (synthwave)
+    - Queen: red/gold/dark-red stripes on black background (royal)
+    - Fleetwood Mac: brown/orange/tan stripes on cream background (70s earthy)
+  - All poster frames and backgrounds have black inverted hull outlines
+  - Dark gray frame border (4 pieces per poster) around each poster
+  - Group rotation set to -Math.PI/2 to face INTO the garage (toward positive X viewers)
+  - Integrated into main.js with createMusicPosters(scene) call
+- Files changed:
+  - js/entities/music-posters.js (new file - complete poster visual design)
+  - js/main.js (import and create music posters)
+- **Learnings for future iterations:**
+  - Wall-mounted objects on LEFT wall need rotation.y = -Math.PI/2 to face INTO garage
+  - BoxGeometry default faces +Z, rotation around Y rotates the facing direction
+  - For left wall (at X=-20): objects at X=-19 with rotation.y=-Math.PI/2 face viewers at +X
+  - Poster local positions use X offset for wall-parallel spread after Y rotation
+  - After 90° Y rotation: local X → world -Z, local Z → world +X
+  - Abstract color stripes work well for representing band aesthetics without images
+  - createToonMaterial() for all colored surfaces to match garage visual style
+
+---
+
+## 2026-01-22 - US-037
+- What was implemented:
+  - Music corner integration - registered music posters as interactable zone
+  - Imported MUSIC from content.js, INTERACTION from constants.js, stations from station.js
+  - Set up group.userData with id 'music-corner', contentData (title, subtitle, description, achievements), isStation flag
+  - Pushed music posters group to stations array for checkStationProximity() detection
+  - contentData uses MUSIC.title ("Music"), MUSIC.subtitle ("Favorite Artists"), MUSIC.description, MUSIC.items
+- Files changed:
+  - js/entities/music-posters.js (added imports, interaction setup, stations registration)
+- **Learnings for future iterations:**
+  - Wall-mounted interactables use same stations array pattern as floor stations
+  - checkStationProximity() uses X and Z coordinates only - Y (wall height) doesn't affect interaction
+  - Music posters at (-19, 6, -5): robot boundary X=-18 is 1 unit away, within 3-unit radius when Z is close to -5
+  - Pattern for wall interactables: set userData.isStation=true, push to stations array
+  - MUSIC content structure: title, subtitle, description, items (not achievements) - mapped to modal format
+
+---
+
+## 2026-01-22 - US-038 & US-039
+- What was implemented:
+  - Created js/entities/entertainment-shelf.js with movie/TV themed shelf unit
+  - Shelf positioned at (19, 4, 0) on right wall, rotated with Math.PI/2 to face into garage
+  - Metal frame structure: 4 corner posts + 3 wood shelf surfaces + wood back panel
+  - Props on shelves (all BoxGeometry for voxel aesthetic):
+    - Kill Bill katana: yellow blade, black handle/guard, angled on top shelf
+    - Paul Blart Segway: gray platform, black box wheels, pole, handlebar on middle shelf
+    - The Batman bat symbol: dark body with angled wings and ear shapes on top shelf
+    - Green Man (Always Sunny): green humanoid figure with raised arm on middle shelf
+    - BattleBots mini robot: silver body, red weapon spinner, 4 wheels on bottom shelf
+  - All major parts have black inverted hull outlines using addOutlineToMesh() pattern
+  - Integration included in same file: userData with contentData, stations.push(group)
+  - Verified interaction via Playwright: prompt shows, E key opens modal with Movies/TV list
+- Files changed:
+  - js/entities/entertainment-shelf.js (new file - complete visual design + integration)
+  - js/main.js (import createEntertainmentShelf, add call in init)
+- **Learnings for future iterations:**
+  - Wall-mounted objects on RIGHT wall need rotation.y = Math.PI/2 to face INTO garage (-X direction)
+  - Right wall at X=20: objects at X=19 with rotation.y=Math.PI/2 face viewers at -X
+  - Shelf at Y=4 (center) means it spans Y=2.5 to Y=5.5 - props visible from ground level
+  - Props can be small and still recognizable with distinct silhouettes (katana, bat wings, segway wheels)
+  - ENTERTAINMENT content structure: title, subtitle, movies[], tv[] - combined into achievements array for modal
+  - Including integration code (stations.push, userData) in visual design file saves a separate story
+
+---
+
+## 2026-01-22 - US-040
+- What was implemented:
+  - Created js/entities/golf-bag.js with voxel-style golf bag prop
+  - Main bag body: navy blue tall rectangular box with chunky proportions
+  - Bag top: slightly wider section at opening for clubs
+  - White stripe accent with red line detail for sporty look
+  - White pocket on front of bag
+  - Two stand legs (angled outward) with dark gray material
+  - Carry strap on side of bag
+  - 4 golf clubs sticking out: driver (longest), 2 irons, putter (shortest with flat blade head)
+  - Each club has: thin box shaft, small box head, grip section
+  - Position at (16, 0, 10) leaning against wall with rotation.y = -PI/8 and rotation.z = 0.15
+  - All parts have black inverted hull outlines using addOutlineToMesh() pattern
+  - Integrated into main.js: import createGolfBag, call createGolfBag(scene)
+- Files changed:
+  - js/entities/golf-bag.js (new file - complete golf bag visual design)
+  - js/main.js (import createGolfBag, add call in init)
+- **Learnings for future iterations:**
+  - Golf bag positioned at (16, 0, 10) - near the front-right area of garage
+  - Leaning effect achieved with rotation.z = 0.15 (small tilt)
+  - Club helper functions (createClub, createPutter) allow reusable club creation with different lengths/sizes
+  - Clubs positioned at Y=2.1 (above bag top) with slight X/Z offsets and varied rotations
+  - Putter has distinctive flat rectangular blade head vs rounded iron heads
+  - Stand legs use rotation.x = -0.3 to angle outward for realistic stand effect
+
+---
+
+## 2026-01-22 - US-041
+- What was implemented:
+  - Created js/entities/catan-tiles.js with Catan board game reference tiles
+  - 7 hexagonal tiles using CylinderGeometry with 6 radialSegments (creates hex shape)
+  - Different colors representing Catan resources:
+    - Forest (green 0x27ae60), Wheat (yellow 0xf1c40f), Brick (orange-brown 0xe67e22)
+    - Ore (gray 0x7f8c8d), Sheep (light green 0x90ee90), Desert (sandy tan 0xdeb887)
+  - Tiles arranged in classic Catan cluster pattern (center desert + 6 surrounding resources)
+  - Small wooden side table (1.0x0.8 units, 0.8 height) with 4 box legs to display tiles
+  - Positioned at (17, 0, 3) near entertainment shelf and golf bag
+  - All parts have black inverted hull outlines using addOutlineToMesh() pattern
+  - Tiles have radius 0.25, height 0.06, positioned at Y=0.87 (above table surface)
+  - Total geometry well under 200 triangles (7 hex cylinders + table = ~150 triangles)
+  - Integrated into main.js: import createCatanTiles, call createCatanTiles(scene)
+- Files changed:
+  - js/entities/catan-tiles.js (new file - complete Catan tiles visual design)
+  - js/main.js (import createCatanTiles, add call in init)
+- **Learnings for future iterations:**
+  - CylinderGeometry with 6 radialSegments creates hexagonal prism (not cylinder)
+  - Rotation.y = Math.PI/6 (30 degrees) orients hex with flat edges facing front/back
+  - Hex cluster pattern: center tile + 6 surrounding at angles 0, PI/3, 2*PI/3, PI, 4*PI/3, 5*PI/3
+  - Hex spacing ~0.45 (radius * 2 - small gap) keeps tiles visually distinct
+  - Small side table design: 4 box legs + flat top is simple and effective
+  - Position (17, 0, 3) places tiles in front-right area near golf bag and entertainment shelf
+
+---
+
+## 2026-01-22 - US-042
+- What was implemented:
+  - Hobby props integration - registered hobby area as interactable zone
+  - Added imports to catan-tiles.js: HOBBIES from content.js, INTERACTION from constants.js, stations from station.js
+  - Created invisible hobbyInteractionGroup at position (16.5, 0, 6.5) between golf bag (16, 0, 10) and Catan tiles (17, 0, 3)
+  - Set up contentData using HOBBIES from content.js:
+    - title: 'Hobbies'
+    - subtitle: 'Outside of Code'
+    - description: 'When not coding, you can find me on the golf course or around a board game table.'
+    - achievements: ['Golf', 'Board Games (especially Catan)']
+  - Set interactionRadius to INTERACTION.RADIUS + 1 (4 units) to cover both props
+  - Pushed hobbyInteractionGroup to stations array for checkStationProximity() detection
+  - Verified full interaction flow via Playwright: approach hobby area → prompt shows → E key opens modal with Hobbies content
+- Files changed:
+  - js/entities/catan-tiles.js (added imports, hobby interaction zone registration)
+- **Learnings for future iterations:**
+  - Hobby area spans two separate props (golf bag at Z=10, Catan at Z=3) - used central interaction point at Z=6.5
+  - Increased interaction radius by 1 unit to cover the larger area
+  - Pattern for multi-prop interactables: create invisible THREE.Group, set position between props, register with stations array
+  - No visible meshes needed for interaction point - just userData and stations array registration
+
+---

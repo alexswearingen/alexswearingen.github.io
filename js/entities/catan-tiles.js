@@ -16,6 +16,9 @@
 
 import * as THREE from 'three';
 import { createToonMaterial, woodMaterial } from '../core/materials.js';
+import { HOBBIES } from '../data/content.js';
+import { INTERACTION } from '../core/constants.js';
+import { stations } from './station.js';
 
 // Outline scale factor for inverted hull technique
 const OUTLINE_SCALE = 1.06;
@@ -159,6 +162,33 @@ export function createCatanTiles(scene) {
 
     // Add to scene
     scene.add(group);
+
+    // === HOBBY AREA INTERACTION (US-042) ===
+    // Create an invisible interaction point for the hobby area
+    // This covers both the golf bag (16, 0, 10) and Catan tiles (17, 0, 3)
+    // Interaction point placed between the two props
+    const hobbyInteractionGroup = new THREE.Group();
+    hobbyInteractionGroup.name = 'hobbyArea';
+    hobbyInteractionGroup.position.set(16.5, 0, 6.5);
+
+    // Set up interaction data using HOBBIES from content.js
+    hobbyInteractionGroup.userData = {
+        id: 'hobby-area',
+        contentData: {
+            title: HOBBIES.title,
+            subtitle: HOBBIES.subtitle,
+            description: HOBBIES.description,
+            achievements: HOBBIES.items
+        },
+        isStation: true,
+        interactionRadius: INTERACTION.RADIUS + 1  // Slightly larger to cover both props
+    };
+
+    // Register with stations array for proximity detection
+    stations.push(hobbyInteractionGroup);
+
+    // Add to scene (invisible - no meshes needed)
+    scene.add(hobbyInteractionGroup);
 
     return group;
 }
