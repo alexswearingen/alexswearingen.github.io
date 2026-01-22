@@ -173,3 +173,19 @@ US-001 through US-061 completed. See git history for details.
   - Varied box sizes (1.4x1.2x1.2, 1.0x0.9x1.0, 0.7x0.5x0.7) and materials (cardboard, cardboardDark) create visual interest
   - Slight rotation (0.1-0.4 radians) on stacked items creates natural, "placed" look
 ---
+
+## 2026-01-22 - US-080
+- What was implemented: Consolidated hobby area with stool and mini fridge
+- Files changed:
+  - js/entities/golf-bag.js (modified - moved position from (16,0,10) to (15,0,5))
+  - js/entities/catan-tiles.js (modified - updated hobby interaction point)
+  - js/entities/hobby-furniture.js (new file)
+  - js/main.js (import and createHobbyFurniture call)
+- **Learnings for future iterations:**
+  - Grouping related props creates cohesive "zones" in the garage
+  - Hobby zone on right side: golf bag (15,0,5), Catan (17,0,3), stool (16,0,1.5), mini fridge (18.2,0,1), entertainment shelf (19,4,0)
+  - Stool design: seat box with 4 angled legs (rotX/rotZ ~0.08) and cross braces for support
+  - Mini fridge design: white body, slightly off-white door, gray handle, freezer line detail, 4 small feet
+  - Rotating mini fridge 90 degrees (Math.PI/2) makes it face into the room
+  - Updating interaction point position when grouping props ensures robot can reach from multiple angles
+---
