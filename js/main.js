@@ -17,6 +17,7 @@ import { createWeb3Station, updateWeb3Animation } from './entities/web3-station.
 import { createWhiteboard } from './entities/whiteboard.js';
 import { createCertifications } from './entities/certifications.js';
 import { createMusicPosters } from './entities/music-posters.js';
+import { createEntertainmentShelf } from './entities/entertainment-shelf.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
@@ -131,6 +132,9 @@ async function init() {
 
     // Create music posters on left wall (US-036)
     createMusicPosters(scene);
+
+    // Create entertainment shelf on right wall (US-038)
+    createEntertainmentShelf(scene);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');
