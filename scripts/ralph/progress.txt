@@ -14,6 +14,27 @@ Started: Thu Jan 22 00:07:17 CST 2026
 - **Bright, saturated colors** - Use toon materials with clear color bands
 - **Take screenshots with Playwright MCP** to visually verify EVERY visual change looks good
 - Reference: The robot redesign (US-008) is the gold standard - all props/stations should match this quality
+
+## USER FEEDBACK - LAYOUT ISSUES
+- **Everything is very spread apart** - the garage doesn't feel alive or cohesive
+- **Doesn't flow** - objects feel isolated, not like a real space
+- When adding new objects, consider clustering them with related items
+- Think about sight lines - what does player see from different positions?
+- Add ambient animations to make space feel alive
+
+## DEBUG TOOLS AVAILABLE
+- **Use `http://localhost:8000?dev=true`** - skips loading screen, starts in top-down view
+- **Camera views** (keyboard 1-5 or `window.debug.setCamera(mode)`):
+  - 1/'follow' = normal gameplay camera
+  - 2/'topdown' = bird's eye view of entire floor plan
+  - 3/'corner' = high corner view, see everything
+  - 4/'front' = see back wall (whiteboard, certs)
+  - 5/'side' = see from left side
+- **Console API**:
+  - `window.debug.getFloorPlan()` - ASCII map of layout
+  - `window.debug.listObjects()` - all objects with positions
+  - `window.debug.teleport(x, z)` - move robot instantly
+  - `window.debug.getSceneInfo()` - full scene summary
 - Three.js addons (EffectComposer, passes, etc.) imported from `three/addons/` path
 - Constants defined in js/core/constants.js - use these for all magic numbers
 - Content data (work history, skills, etc.) lives in js/data/content.js
@@ -1003,5 +1024,26 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - Voxel-style icons can be created with small BoxGeometry arrangements (envelope, @ symbol, pin)
   - Sign positioned near garage entrance (Z=16) is easily discoverable but not obtrusive
   - US-043 included interaction integration work - US-044 will verify the modal behavior more thoroughly
+
+---
+
+## 2026-01-22 - US-044
+- What was implemented:
+  - Contact sign integration - added clickable links for email, LinkedIn, and GitHub
+  - Created convertTextToLinks() function in js/systems/ui.js
+  - Function converts URLs (http/https) to clickable <a> tags with target="_blank"
+  - Function converts email addresses to mailto: links with target="_blank"
+  - XSS prevention: HTML escaping applied before link conversion
+  - Long URLs truncated to 40 chars with "..." for display
+  - Verified full interaction flow: teleport robot to (8, 14) → prompt appears → E key → modal with clickable links
+  - Modal shows: Email (mailto link), LinkedIn (URL link), GitHub (URL link), Location (plain text)
+- Files changed:
+  - js/systems/ui.js (added convertTextToLinks function, updated showModal to use innerHTML with converted text)
+- **Learnings for future iterations:**
+  - convertTextToLinks() uses regex to find URLs and emails in achievement list items
+  - HTML escaping BEFORE regex replacement prevents XSS attacks
+  - The function is generic and works for all station modals - any achievement with a URL or email will be clickable
+  - Pattern: `li.innerHTML = convertTextToLinks(achievement)` instead of `li.textContent = achievement`
+  - Adding `rel="noopener noreferrer"` to external links is security best practice
 
 ---
