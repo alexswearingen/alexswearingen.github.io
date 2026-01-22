@@ -1055,7 +1055,7 @@
       ],
       "priority": 59,
       "passes": false,
-      "notes": ""
+      "notes": "Partial progress: Merged wall geometry (5→1 draw calls), ceiling beams use InstancedMesh (5→1 draw calls), shared outlineMaterial across all 16 entity files, added getRendererStats() debug API. Current: ~354 draw calls (508 meshes, 207 outlines). Target <50 requires major architecture rewrite to batch all static meshes by material."
     },
     {
       "id": "US-060",
