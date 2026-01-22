@@ -2,10 +2,14 @@
  * Music corner posters entity
  * 4 poster frames on the left wall representing favorite artists
  * Each with distinct color schemes matching band aesthetics
+ * Interactive element for displaying music preferences
  */
 
 import * as THREE from 'three';
 import { createToonMaterial } from '../core/materials.js';
+import { MUSIC } from '../data/content.js';
+import { INTERACTION } from '../core/constants.js';
+import { stations } from './station.js';
 
 // Outline scale factor - matches robot.js for consistent style
 const OUTLINE_SCALE = 1.06;
@@ -225,6 +229,24 @@ export function createMusicPosters(scene) {
 
     // Store module-level reference
     musicPosters = group;
+
+    // === INTERACTION SETUP ===
+    // Set up userData for interaction system (same pattern as stations)
+    group.userData = {
+        id: 'music-corner',
+        contentData: {
+            title: MUSIC.title,
+            subtitle: MUSIC.subtitle,
+            description: MUSIC.description,
+            achievements: MUSIC.items
+        },
+        isStation: true,  // Treat as station for interaction system
+        interactionRadius: INTERACTION.RADIUS
+    };
+
+    // Register music corner with the stations array for proximity detection
+    // This allows checkStationProximity() to detect it
+    stations.push(group);
 
     // Add to scene
     scene.add(group);
