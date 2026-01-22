@@ -9,6 +9,7 @@ import { camera } from '../core/engine.js';
 import { addUpdateCallback } from '../core/loop.js';
 import { checkBoundaries, checkObjectCollisions } from './collision.js';
 import { isModalOpen } from './ui.js';
+import { isDebugCameraActive } from './debug.js';
 
 // Track which keys are currently pressed
 const keysPressed = {
@@ -243,10 +244,14 @@ function updateMovement(deltaTime) {
 /**
  * Update camera position to follow the robot smoothly
  * Uses offset from constants and lerp for smooth following
+ * Skips update when debug camera is active
  * @param {number} deltaTime - Time since last frame in seconds
  */
 function updateCamera(deltaTime) {
     if (!robot || !camera) return;
+
+    // Skip camera follow when debug camera is active
+    if (isDebugCameraActive()) return;
 
     // Calculate target camera position: robot position + offset
     const targetX = robot.position.x + CAMERA.OFFSET.x;

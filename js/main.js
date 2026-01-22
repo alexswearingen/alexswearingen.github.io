@@ -21,7 +21,9 @@ import { createEntertainmentShelf } from './entities/entertainment-shelf.js';
 import { createGolfBag } from './entities/golf-bag.js';
 import { createCatanTiles } from './entities/catan-tiles.js';
 import { createContactSign } from './entities/contact-sign.js';
+import { createCeilingFan, updateCeilingFanAnimation } from './entities/ceiling-fan.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
+import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 
 // Track the currently nearby station for interaction
 let nearbyStation = null;
@@ -148,7 +150,40 @@ async function init() {
     // Create contact sign near garage entrance (US-043)
     createContactSign(scene);
 
-    // Hide loading text, show start button
+    // Create ceiling fan (US-045)
+    createCeilingFan(scene);
+
+    // Register ceiling fan animation with game loop
+    addUpdateCallback(updateCeilingFanAnimation);
+
+    // Initialize debug controls (keyboard shortcuts for camera views)
+    initDebugControls();
+
+    // Dev mode: skip loading screen entirely
+    if (isDevMode) {
+        console.log('[Dev Mode] Auto-starting experience...');
+        console.log('[Dev Mode] Camera shortcuts: 1=follow, 2=topdown, 3=corner, 4=front, 5=side');
+        console.log('[Dev Mode] Use window.debug.help() for full API');
+
+        // Hide loading screen immediately
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
+
+        // Start game loop immediately
+        startLoop();
+
+        // Set to top-down view by default for dev mode
+        setTimeout(() => {
+            setCamera('topdown');
+            console.log(getFloorPlan());
+        }, 100);
+
+        return;
+    }
+
+    // Normal mode: show loading screen with start button
     const loadingText = document.getElementById('loading-text');
     const startButton = document.getElementById('start-button');
     const progressBar = document.getElementById('progress-bar');
