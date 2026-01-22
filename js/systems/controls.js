@@ -7,7 +7,7 @@ import { ROBOT, CAMERA } from '../core/constants.js';
 import { robot } from '../entities/robot.js';
 import { camera } from '../core/engine.js';
 import { addUpdateCallback } from '../core/loop.js';
-import { checkBoundaries } from './collision.js';
+import { checkBoundaries, checkObjectCollisions } from './collision.js';
 
 // Track which keys are currently pressed
 const keysPressed = {
@@ -208,17 +208,23 @@ function updateMovement(deltaTime) {
         const speed = ROBOT.MOVEMENT_SPEED;
         const moveAmount = speed * deltaTime;
 
-        // Calculate new position
+        // Calculate desired new position
         const newX = robot.position.x + movement.x * moveAmount;
         const newZ = robot.position.z + movement.z * moveAmount;
 
-        // Apply boundary check to clamp position within garage bounds
-        // Boundary check clamps each axis independently for wall sliding behavior
-        const clampedPos = checkBoundaries({ x: newX, z: newZ });
+        // Current position for collision detection
+        const currentPos = { x: robot.position.x, z: robot.position.z };
+        const desiredPos = { x: newX, z: newZ };
 
-        // Update robot position with clamped values
-        robot.position.x = clampedPos.x;
-        robot.position.z = clampedPos.z;
+        // Apply object collision check first (handles sliding along objects)
+        const afterObjectCollision = checkObjectCollisions(currentPos, desiredPos);
+
+        // Then apply boundary check to clamp position within garage bounds
+        const finalPos = checkBoundaries(afterObjectCollision);
+
+        // Update robot position with final collision-resolved values
+        robot.position.x = finalPos.x;
+        robot.position.z = finalPos.z;
 
         // Calculate target rotation angle from movement direction
         // Math.atan2(x, z) gives angle from +Z axis toward +X axis
