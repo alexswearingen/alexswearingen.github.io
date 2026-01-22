@@ -25,6 +25,7 @@ import { createCeilingFan, updateCeilingFanAnimation } from './entities/ceiling-
 import { createToolbox } from './entities/toolbox.js';
 import { createWorkbench } from './entities/workbench.js';
 import { createShelvingUnit } from './entities/shelving-unit.js';
+import { createDustParticles, updateDustParticles } from './entities/dust-particles.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 
@@ -167,6 +168,12 @@ async function init() {
 
     // Create shelving unit prop (US-049)
     createShelvingUnit(scene);
+
+    // Create dust particles for atmosphere (US-051)
+    createDustParticles(scene);
+
+    // Register dust particles animation with game loop
+    addUpdateCallback(updateDustParticles);
 
     // Initialize debug controls (keyboard shortcuts for camera views)
     initDebugControls();
