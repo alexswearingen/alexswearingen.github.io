@@ -1,16 +1,17 @@
 /**
- * Workbench Prop Visual Design (US-048)
+ * Workbench Prop Visual Design (US-048, US-076)
  * Voxel-style workbench prop in the garage
  *
  * Design features:
  * - Workbench at position (-14, 0, 8)
  * - Table top: chunky box geometry, wood colored
- * - 4 legs: chunky box legs (not thin cylinders)
+ * - Cabinet storage underneath with doors and handles (US-076)
+ * - Drawer unit with multiple drawers (US-076)
  * - Tool shapes on top: blocky wrench, hammer silhouettes (boxes only)
  * - ALL BoxGeometry for voxel aesthetic
  * - Black inverted hull outlines on all parts
  *
- * Total geometry target: <300 triangles
+ * Total geometry target: <400 triangles
  */
 
 import * as THREE from 'three';
@@ -25,6 +26,9 @@ const darkWoodMaterial = createToonMaterial(0x5d4037);     // Dark wood for legs
 const metalGrayMaterial = createToonMaterial(0x607d8b);    // Metal gray for tools
 const redHandleMaterial = createToonMaterial(0xc0392b);    // Red handle for hammer
 const yellowMaterial = createToonMaterial(0xf1c40f);       // Yellow for tool accents
+const cabinetBlueMaterial = createToonMaterial(0x2c3e50); // Dark blue for cabinet doors
+const drawerGrayMaterial = createToonMaterial(0x3d566e);  // Slightly lighter gray for drawers
+const handleMaterial = createToonMaterial(0x95a5a6);       // Light silver for handles
 
 // Export reference for potential collision registration
 export let workbench = null;
@@ -76,43 +80,159 @@ export function createWorkbench(scene) {
     group.add(tableTop);
     addOutlineToMesh(tableTop, group);
 
-    // === TABLE LEGS (4 chunky box legs) ===
-    const legWidth = 0.15;
-    const legHeight = tableY - tableHeight / 2;  // Height from floor to bottom of table
-    const legDepth = 0.15;
+    // === CABINET STORAGE UNDERNEATH ===
+    // Cabinet base/frame dimensions
+    const cabinetHeight = tableY - tableHeight / 2;  // Height from floor to bottom of table
+    const cabinetWidth = tableWidth;
+    const cabinetDepth = tableDepth;
 
-    const legGeometry = new THREE.BoxGeometry(legWidth, legHeight, legDepth);
+    // --- Back panel (solid back) ---
+    const backPanelGeometry = new THREE.BoxGeometry(cabinetWidth, cabinetHeight, 0.05);
+    const backPanel = new THREE.Mesh(backPanelGeometry, darkWoodMaterial);
+    backPanel.name = 'cabinetBackPanel';
+    backPanel.position.set(0, cabinetHeight / 2, -cabinetDepth / 2 + 0.025);
+    backPanel.castShadow = true;
+    backPanel.receiveShadow = true;
+    group.add(backPanel);
+    addOutlineToMesh(backPanel, group);
 
-    // Leg positions - at corners of table
-    const legOffsetX = tableWidth / 2 - legWidth / 2 - 0.05;
-    const legOffsetZ = tableDepth / 2 - legDepth / 2 - 0.05;
+    // --- Side panels (left and right) ---
+    const sidePanelGeometry = new THREE.BoxGeometry(0.05, cabinetHeight, cabinetDepth);
 
-    const legPositions = [
-        { x: -legOffsetX, z: -legOffsetZ, name: 'legBackLeft' },
-        { x: legOffsetX, z: -legOffsetZ, name: 'legBackRight' },
-        { x: -legOffsetX, z: legOffsetZ, name: 'legFrontLeft' },
-        { x: legOffsetX, z: legOffsetZ, name: 'legFrontRight' }
-    ];
+    const leftPanel = new THREE.Mesh(sidePanelGeometry, darkWoodMaterial);
+    leftPanel.name = 'cabinetLeftPanel';
+    leftPanel.position.set(-cabinetWidth / 2 + 0.025, cabinetHeight / 2, 0);
+    leftPanel.castShadow = true;
+    leftPanel.receiveShadow = true;
+    group.add(leftPanel);
+    addOutlineToMesh(leftPanel, group);
 
-    legPositions.forEach((pos) => {
-        const leg = new THREE.Mesh(legGeometry, darkWoodMaterial);
-        leg.name = pos.name;
-        leg.position.set(pos.x, legHeight / 2, pos.z);
-        leg.castShadow = true;
-        leg.receiveShadow = true;
-        group.add(leg);
-        addOutlineToMesh(leg, group);
-    });
+    const rightPanel = new THREE.Mesh(sidePanelGeometry, darkWoodMaterial);
+    rightPanel.name = 'cabinetRightPanel';
+    rightPanel.position.set(cabinetWidth / 2 - 0.025, cabinetHeight / 2, 0);
+    rightPanel.castShadow = true;
+    rightPanel.receiveShadow = true;
+    group.add(rightPanel);
+    addOutlineToMesh(rightPanel, group);
 
-    // === LOWER SHELF (cross-brace / shelf between legs) ===
-    const shelfGeometry = new THREE.BoxGeometry(tableWidth - 0.3, 0.08, tableDepth - 0.2);
-    const shelf = new THREE.Mesh(shelfGeometry, darkWoodMaterial);
-    shelf.name = 'workbenchShelf';
-    shelf.position.set(0, 0.25, 0);
-    shelf.castShadow = true;
-    shelf.receiveShadow = true;
-    group.add(shelf);
-    addOutlineToMesh(shelf, group);
+    // --- Bottom panel ---
+    const bottomPanelGeometry = new THREE.BoxGeometry(cabinetWidth - 0.1, 0.05, cabinetDepth - 0.05);
+    const bottomPanel = new THREE.Mesh(bottomPanelGeometry, darkWoodMaterial);
+    bottomPanel.name = 'cabinetBottomPanel';
+    bottomPanel.position.set(0, 0.025, 0);
+    bottomPanel.castShadow = true;
+    bottomPanel.receiveShadow = true;
+    group.add(bottomPanel);
+    addOutlineToMesh(bottomPanel, group);
+
+    // --- Middle divider (separates cabinets from drawers) ---
+    const dividerGeometry = new THREE.BoxGeometry(0.05, cabinetHeight - 0.1, cabinetDepth - 0.05);
+    const divider = new THREE.Mesh(dividerGeometry, darkWoodMaterial);
+    divider.name = 'cabinetDivider';
+    divider.position.set(0.35, cabinetHeight / 2, 0);  // Right of center
+    divider.castShadow = true;
+    divider.receiveShadow = true;
+    group.add(divider);
+    addOutlineToMesh(divider, group);
+
+    // === CABINET DOORS (2 doors on left side) ===
+    const doorWidth = 0.55;
+    const doorHeight = cabinetHeight - 0.1;
+    const doorDepth = 0.04;
+    const doorGeometry = new THREE.BoxGeometry(doorWidth, doorHeight, doorDepth);
+    const doorZPos = cabinetDepth / 2 - 0.02;  // Front of cabinet
+
+    // Left cabinet door
+    const leftDoor = new THREE.Mesh(doorGeometry, cabinetBlueMaterial);
+    leftDoor.name = 'cabinetLeftDoor';
+    leftDoor.position.set(-0.55, cabinetHeight / 2, doorZPos);
+    leftDoor.castShadow = true;
+    leftDoor.receiveShadow = true;
+    group.add(leftDoor);
+    addOutlineToMesh(leftDoor, group);
+
+    // Left door handle
+    const doorHandleGeometry = new THREE.BoxGeometry(0.06, 0.12, 0.03);
+    const leftDoorHandle = new THREE.Mesh(doorHandleGeometry, handleMaterial);
+    leftDoorHandle.name = 'leftDoorHandle';
+    leftDoorHandle.position.set(-0.32, cabinetHeight / 2, doorZPos + 0.035);
+    leftDoorHandle.castShadow = true;
+    group.add(leftDoorHandle);
+    addOutlineToMesh(leftDoorHandle, group, 1.08);
+
+    // Right cabinet door
+    const rightDoor = new THREE.Mesh(doorGeometry, cabinetBlueMaterial);
+    rightDoor.name = 'cabinetRightDoor';
+    rightDoor.position.set(0.0, cabinetHeight / 2, doorZPos);
+    rightDoor.castShadow = true;
+    rightDoor.receiveShadow = true;
+    group.add(rightDoor);
+    addOutlineToMesh(rightDoor, group);
+
+    // Right door handle
+    const rightDoorHandle = new THREE.Mesh(doorHandleGeometry, handleMaterial);
+    rightDoorHandle.name = 'rightDoorHandle';
+    rightDoorHandle.position.set(-0.22, cabinetHeight / 2, doorZPos + 0.035);
+    rightDoorHandle.castShadow = true;
+    group.add(rightDoorHandle);
+    addOutlineToMesh(rightDoorHandle, group, 1.08);
+
+    // === DRAWER UNIT (3 stacked drawers on right side) ===
+    const drawerWidth = 0.5;
+    const drawerHeight = (cabinetHeight - 0.15) / 3;  // 3 drawers with gaps
+    const drawerFrontDepth = 0.04;
+    const drawerGeometry = new THREE.BoxGeometry(drawerWidth, drawerHeight - 0.02, drawerFrontDepth);
+    const drawerHandleGeometry = new THREE.BoxGeometry(0.15, 0.03, 0.025);
+
+    const drawerXPos = 0.7;  // Right side of cabinet
+
+    // Top drawer
+    const topDrawer = new THREE.Mesh(drawerGeometry, drawerGrayMaterial);
+    topDrawer.name = 'topDrawer';
+    topDrawer.position.set(drawerXPos, cabinetHeight - drawerHeight / 2 - 0.03, doorZPos);
+    topDrawer.castShadow = true;
+    topDrawer.receiveShadow = true;
+    group.add(topDrawer);
+    addOutlineToMesh(topDrawer, group);
+
+    const topDrawerHandle = new THREE.Mesh(drawerHandleGeometry, handleMaterial);
+    topDrawerHandle.name = 'topDrawerHandle';
+    topDrawerHandle.position.set(drawerXPos, cabinetHeight - drawerHeight / 2 - 0.03, doorZPos + 0.035);
+    topDrawerHandle.castShadow = true;
+    group.add(topDrawerHandle);
+    addOutlineToMesh(topDrawerHandle, group, 1.1);
+
+    // Middle drawer
+    const middleDrawer = new THREE.Mesh(drawerGeometry, drawerGrayMaterial);
+    middleDrawer.name = 'middleDrawer';
+    middleDrawer.position.set(drawerXPos, cabinetHeight / 2, doorZPos);
+    middleDrawer.castShadow = true;
+    middleDrawer.receiveShadow = true;
+    group.add(middleDrawer);
+    addOutlineToMesh(middleDrawer, group);
+
+    const middleDrawerHandle = new THREE.Mesh(drawerHandleGeometry, handleMaterial);
+    middleDrawerHandle.name = 'middleDrawerHandle';
+    middleDrawerHandle.position.set(drawerXPos, cabinetHeight / 2, doorZPos + 0.035);
+    middleDrawerHandle.castShadow = true;
+    group.add(middleDrawerHandle);
+    addOutlineToMesh(middleDrawerHandle, group, 1.1);
+
+    // Bottom drawer
+    const bottomDrawer = new THREE.Mesh(drawerGeometry, drawerGrayMaterial);
+    bottomDrawer.name = 'bottomDrawer';
+    bottomDrawer.position.set(drawerXPos, drawerHeight / 2 + 0.03, doorZPos);
+    bottomDrawer.castShadow = true;
+    bottomDrawer.receiveShadow = true;
+    group.add(bottomDrawer);
+    addOutlineToMesh(bottomDrawer, group);
+
+    const bottomDrawerHandle = new THREE.Mesh(drawerHandleGeometry, handleMaterial);
+    bottomDrawerHandle.name = 'bottomDrawerHandle';
+    bottomDrawerHandle.position.set(drawerXPos, drawerHeight / 2 + 0.03, doorZPos + 0.035);
+    bottomDrawerHandle.castShadow = true;
+    group.add(bottomDrawerHandle);
+    addOutlineToMesh(bottomDrawerHandle, group, 1.1);
 
     // === TOOLS ON TOP ===
 
@@ -185,11 +305,11 @@ export function createWorkbench(scene) {
     // Store reference
     workbench = group;
 
-    // Register collision box for the workbench
+    // Register collision box for the workbench (wider to include drawers)
     registerCollisionBox('workbench', {
         x: -14,
         z: 8,
-        width: tableWidth + 0.2,
+        width: tableWidth + 0.6,  // Extra width for drawer unit
         depth: tableDepth + 0.2
     });
 
