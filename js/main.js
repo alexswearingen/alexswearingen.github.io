@@ -12,6 +12,7 @@ import { initControls, isInteractKeyPressed } from './systems/controls.js';
 import { checkStationProximity } from './entities/station.js';
 import { createBrokkStation, updateBrokkAnimation } from './entities/brokk-station.js';
 import { createRevojamStation, updateRevojamAnimation } from './entities/revojam-station.js';
+import { createLoanscoutStation, updateLoanscoutAnimation } from './entities/loanscout-station.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
@@ -103,6 +104,13 @@ async function init() {
 
     // Register Revojam station animation with game loop
     addUpdateCallback(updateRevojamAnimation);
+
+    // Create LoanScout station with visual design
+    const loanscoutStationGroup = createLoanscoutStation();
+    scene.add(loanscoutStationGroup);
+
+    // Register LoanScout station animation with game loop
+    addUpdateCallback(updateLoanscoutAnimation);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');
