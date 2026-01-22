@@ -585,3 +585,24 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - The acceptance criteria "Add station meshes to outlinePass.selectedObjects" is outdated - use inverted hull instead
 
 ---
+
+## 2026-01-22 - US-025
+- What was implemented:
+  - Verified Revojam station animation was already fully implemented in US-023
+  - updateRevojamAnimation() function in revojam-station.js handles all animations:
+    - Vinyl record rotates on Z axis at ANIMATION.VINYL_ROTATION (0.02 rad/frame)
+    - Record label (recordLabel) rotates with the vinyl using station.getObjectByName()
+    - Speaker cones (leftSpeakerCone, rightSpeakerCone) pulse via scale oscillation (0.97-1.03)
+  - Animation was already registered in main.js: addUpdateCallback(updateRevojamAnimation)
+  - Verified via Playwright: no console errors, station visible, game running smoothly
+  - Esbuild syntax checks pass for both revojam-station.js and main.js
+- Files changed:
+  - None - all animation code was already in place from US-023
+- **Learnings for future iterations:**
+  - Animation stories (US-022, US-025, etc.) may already be implemented in visual design stories
+  - updateXxxAnimation pattern: export from entity file, register in main.js with addUpdateCallback()
+  - Record rotation uses Z axis (not Y) because the record faces the viewer (+Z direction)
+  - Speaker pulse uses time-based sine wave for smooth oscillation independent of framerate
+  - Always verify animation is registered in game loop (main.js addUpdateCallback calls)
+
+---
