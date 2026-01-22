@@ -119,3 +119,17 @@ US-001 through US-061 completed. See git history for details.
   - Position adjustments may be needed to avoid clipping - always verify collision bounds vs wall limits
 ---
 
+## 2026-01-22 - US-076
+- What was implemented: Workbench cabinet storage underneath
+- Files changed:
+  - js/entities/workbench.js (modified)
+- **Learnings for future iterations:**
+  - Replace table legs with full cabinet structure: back panel, side panels, bottom panel, and divider
+  - Cabinet doors use dark blue material (0x2c3e50) for visual contrast with wood frame
+  - Drawer unit uses slightly lighter gray (0x3d566e) to distinguish from cabinet doors
+  - Door handles use light silver (0x95a5a6) with small outline scale (1.08) for visibility
+  - Position cabinet doors at `cabinetDepth / 2 - 0.02` (front of cabinet) with handles at +0.035 Z offset
+  - Drawer heights calculated as `(cabinetHeight - 0.15) / 3` for even spacing with gaps
+  - Collision box width needs to increase to account for drawer unit extending past table top
+---
+
