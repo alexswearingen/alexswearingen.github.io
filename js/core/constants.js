@@ -103,11 +103,14 @@ export const ANIMATION = {
 };
 
 // Station Positions
+// Work stations clustered in a 2x2 grid in back-left quadrant forming a cohesive work zone
+// Layout: Compact cluster allows easier navigation and creates clear "zones" in garage
+// Zone concept: Work zone (back-left), Hobby zone (right side), Entrance (front)
 export const STATION_POSITIONS = {
-    BROKK: { x: 0, z: -12 },
-    REVOJAM: { x: -12, z: -10 },
-    LOANSCOUT: { x: 12, z: -10 },
-    WEB3: { x: -12, z: 6 }
+    BROKK: { x: -8, z: -12 },        // Back-left corner - AI/tech workstation (primary)
+    REVOJAM: { x: -2, z: -12 },      // Next to Brokk - music/audio station
+    LOANSCOUT: { x: -8, z: -6 },     // In front of Brokk - finance station
+    WEB3: { x: -2, z: -6 }           // In front of Revojam - crypto/blockchain station
 };
 
 // Particle System
