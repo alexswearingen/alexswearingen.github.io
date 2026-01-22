@@ -1318,3 +1318,34 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - worldToMinimap() function centralizes coordinate conversion
   - Performance testing: use performance.now() in loop to measure average/max/min times
   - Robot position is read directly each frame - no need for event-based updates
+
+---
+
+## 2026-01-22 - US-056
+- What was implemented:
+  - Resume fallback page structure in index.html
+  - Resume section HTML with: header (name, title, location), summary, experience, skills, certifications, contact
+  - CSS styles in main.css for resume layout:
+    - .resume-container: max-width 800px, centered
+    - .resume-header: centered text, border-bottom
+    - .resume-section: h2 with uppercase, letter-spacing, purple underline
+    - .experience-entry: company/dates header, role, description, achievements list
+    - .skills-grid: responsive grid for skill categories
+    - .contact-grid: responsive grid for contact items
+    - Responsive @media queries for mobile
+  - populateResume() function in main.js to populate content from content.js
+  - hideResume() function and "Back to 3D Experience" button wiring
+  - Work history displayed in reverse chronological order (Brokk AI, LoanScout, Revojam, Web3)
+  - Contact links are clickable with mailto: for email and target="_blank" for URLs
+- Files changed:
+  - index.html (added resume section HTML structure with all sections)
+  - css/main.css (added ~200 lines of resume-specific styles)
+  - js/main.js (added populateResume, hideResume functions, content.js imports)
+- **Learnings for future iterations:**
+  - Browser caching is aggressive - use CDP Network.clearBrowserCache or new browser session to test CSS changes
+  - Inter font already loaded via system font stack in main.css
+  - populateResume() uses template literals for HTML generation with job.title, job.subtitle, etc.
+  - Work order defined as array ['brokkAi', 'loanScout', 'revojam', 'web3'] for explicit ordering
+  - Skills grid uses CSS grid with auto-fit minmax(200px, 1fr) for responsive columns
+  - hideResume() also needs to restore minimap visibility (display: block)
+
