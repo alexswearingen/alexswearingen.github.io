@@ -8,6 +8,47 @@ export let isModalOpen = false;
 
 // Cached DOM elements for performance
 let modalOverlay = null;
+
+/**
+ * Convert URLs and email addresses in text to clickable links
+ * @param {string} text - Text that may contain URLs or email addresses
+ * @returns {string} - HTML string with URLs converted to <a> tags
+ */
+function convertTextToLinks(text) {
+    if (!text) return '';
+
+    // Escape HTML first to prevent XSS
+    let safeText = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+    // Convert URLs (http/https)
+    // Match URLs that start with http:// or https://
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    safeText = safeText.replace(urlRegex, (url) => {
+        // Remove trailing punctuation that's likely not part of the URL
+        let cleanUrl = url.replace(/[.,;:!?)]+$/, '');
+        let trailing = url.substring(cleanUrl.length);
+        // Create a display-friendly version (remove protocol, truncate if too long)
+        let displayUrl = cleanUrl.replace(/^https?:\/\//, '');
+        if (displayUrl.length > 40) {
+            displayUrl = displayUrl.substring(0, 37) + '...';
+        }
+        return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer">${displayUrl}</a>${trailing}`;
+    });
+
+    // Convert email addresses
+    // Match common email patterns
+    const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
+    safeText = safeText.replace(emailRegex, (email) => {
+        return `<a href="mailto:${email}" target="_blank" rel="noopener noreferrer">${email}</a>`;
+    });
+
+    return safeText;
+}
 let modalTitle = null;
 let modalSubtitle = null;
 let modalDates = null;
@@ -94,7 +135,8 @@ export function showModal(content) {
         if (content.achievements && Array.isArray(content.achievements)) {
             content.achievements.forEach(achievement => {
                 const li = document.createElement('li');
-                li.textContent = achievement;
+                // Convert URLs and email addresses to clickable links
+                li.innerHTML = convertTextToLinks(achievement);
                 modalAchievements.appendChild(li);
             });
         }
