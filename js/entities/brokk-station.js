@@ -16,6 +16,7 @@ import * as THREE from 'three';
 import { STATION_POSITIONS, COLORS, ANIMATION } from '../core/constants.js';
 import { createStation } from './station.js';
 import { metalMaterial, brokkAccentMaterial, createToonMaterial } from '../core/materials.js';
+import { WORK_HISTORY } from '../data/content.js';
 
 // Outline scale factor for inverted hull technique
 const OUTLINE_SCALE = 1.05;
@@ -76,20 +77,18 @@ function addOutlineToMesh(mesh, group, scale = OUTLINE_SCALE) {
  */
 export function createBrokkStation() {
     // Create station using factory (handles collision, interaction, userData)
+    // Use content from content.js for consistency
+    const brokkContent = WORK_HISTORY.brokkAi;
     const group = createStation({
         id: 'brokk-station',
         position: STATION_POSITIONS.BROKK,
         size: { width: 4, depth: 3 },
         contentData: {
-            title: 'Brokk AI',
-            subtitle: 'Software Engineer → Technical Product Marketing',
-            dates: '2025 - Present',
-            description: 'AI-powered development tools company. Transitioned from engineering to Technical Product Marketing role.',
-            achievements: [
-                'Built and maintained AI-powered development tools',
-                'Transitioned to Technical Product Marketing role',
-                'Bridging technical expertise with market communication'
-            ]
+            title: brokkContent.title,
+            subtitle: brokkContent.subtitle,
+            dates: brokkContent.dates,
+            description: brokkContent.description,
+            achievements: brokkContent.achievements
         }
     });
 
