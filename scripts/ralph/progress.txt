@@ -1202,3 +1202,30 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - Use window.debug.teleport(x, z) to quickly test collision from different positions
 
 ---
+
+## 2026-01-22 - US-051
+- What was implemented:
+  - Created js/entities/dust-particles.js with floating dust particles for atmospheric effect
+  - Uses THREE.Points with BufferGeometry for efficient particle rendering
+  - 60 particles (from PARTICLES.DUST_COUNT constant) distributed throughout garage volume
+  - Particles are white (0xffffff), semi-transparent (opacity 0.4), size 0.08 (PARTICLES.DUST_SIZE)
+  - Random drift velocities for each particle using PARTICLES.DUST_SPEED (0.005)
+  - Y velocity is slower (0.5x) for more natural floating effect
+  - Boundary wrapping when particles leave garage bounds
+  - updateDustParticles() animation function registered with game loop in main.js
+  - Particles use depthWrite: false to prevent z-fighting with transparent objects
+  - frustumCulled: false ensures particles always render (span entire garage)
+- Files changed:
+  - js/entities/dust-particles.js (new file - complete particle system)
+  - js/main.js (import createDustParticles/updateDustParticles, add to scene, register animation)
+- **Learnings for future iterations:**
+  - THREE.Points is efficient for many small particles - better than individual meshes
+  - BufferGeometry with Float32Array for positions allows direct manipulation in animation loop
+  - needsUpdate = true on position attribute is required after modifying particle positions
+  - Velocity stored in separate array (not in geometry) for animation
+  - PARTICLES constants already defined in constants.js: DUST_COUNT (60), DUST_SIZE (0.08), DUST_SPEED (0.005)
+  - deltaTime * 60 normalization keeps animation consistent across frame rates (speeds defined per-frame at 60fps)
+  - depthWrite: false and transparent: true are important for particle rendering
+  - sizeAttenuation: true makes particles smaller when farther from camera (natural depth effect)
+
+---

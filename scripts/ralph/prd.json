@@ -915,8 +915,8 @@
         "Typecheck passes"
       ],
       "priority": 51,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - Created js/entities/dust-particles.js with 60 floating particles using THREE.Points. Particles are white, semi-transparent (0.4 opacity), size 0.08, distributed throughout garage volume. Slow drift animation with boundary wrapping. Registered with game loop in main.js."
     },
     {
       "id": "US-052",
