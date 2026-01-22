@@ -5,7 +5,7 @@
 
 import { initEngine, scene } from './core/engine.js';
 import { startLoop } from './core/loop.js';
-import { createFloor, createWalls } from './entities/garage.js';
+import { createFloor, createWalls, createCeiling } from './entities/garage.js';
 
 /**
  * Initialize the application
@@ -17,6 +17,7 @@ async function init() {
     // Create the garage environment
     createFloor(scene);
     createWalls(scene);
+    createCeiling(scene);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');

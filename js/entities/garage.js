@@ -5,7 +5,7 @@
 
 import * as THREE from 'three';
 import { GARAGE } from '../core/constants.js';
-import { concreteMaterial, wallMaterial } from '../core/materials.js';
+import { concreteMaterial, wallMaterial, woodMaterial } from '../core/materials.js';
 
 /**
  * Creates the garage floor
@@ -122,8 +122,59 @@ export function createWalls(scene) {
     return wallGroup;
 }
 
-export function createCeiling() {
-    return null;
+/**
+ * Creates the garage ceiling with exposed wooden beams
+ * Ceiling plane at Y=15 with 5 evenly spaced beams spanning the width
+ * @param {THREE.Scene} scene - The Three.js scene to add ceiling to
+ * @returns {THREE.Group} - Group containing ceiling plane and beams
+ */
+export function createCeiling(scene) {
+    const ceilingGroup = new THREE.Group();
+    ceilingGroup.name = 'garage-ceiling';
+
+    const ceilingHeight = GARAGE.HEIGHT;
+    const ceilingWidth = GARAGE.WIDTH;
+    const ceilingDepth = GARAGE.DEPTH;
+
+    // Ceiling plane - facing downward
+    const ceilingGeometry = new THREE.PlaneGeometry(ceilingWidth, ceilingDepth);
+    const ceiling = new THREE.Mesh(ceilingGeometry, wallMaterial);
+    ceiling.position.set(0, ceilingHeight, 0);
+    ceiling.rotation.x = Math.PI / 2; // Face downward (-Y)
+    ceiling.receiveShadow = true;
+    ceiling.name = 'ceiling-plane';
+    ceilingGroup.add(ceiling);
+
+    // Wooden beams spanning width of garage
+    // 5 beams evenly spaced along Z axis
+    const beamCount = 5;
+    const beamWidth = ceilingWidth * 0.95; // Slightly shorter than ceiling
+    const beamHeight = 0.8; // Beam thickness (vertical)
+    const beamDepth = 0.5; // Beam depth (along Z)
+
+    // Calculate spacing: divide the usable Z range among beams
+    const usableDepth = ceilingDepth * 0.8; // 80% of depth for beam distribution
+    const startZ = -usableDepth / 2;
+    const beamSpacing = usableDepth / (beamCount - 1);
+
+    const beamGeometry = new THREE.BoxGeometry(beamWidth, beamHeight, beamDepth);
+
+    for (let i = 0; i < beamCount; i++) {
+        const beam = new THREE.Mesh(beamGeometry, woodMaterial);
+        const zPos = startZ + i * beamSpacing;
+
+        // Position beam just below ceiling
+        beam.position.set(0, ceilingHeight - beamHeight / 2, zPos);
+        beam.castShadow = true;
+        beam.receiveShadow = true;
+        beam.name = `ceiling-beam-${i}`;
+        ceilingGroup.add(beam);
+    }
+
+    // Add ceiling group to scene
+    scene.add(ceilingGroup);
+
+    return ceilingGroup;
 }
 
 export function createGarage() {
