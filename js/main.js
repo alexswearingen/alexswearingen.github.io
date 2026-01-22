@@ -28,6 +28,7 @@ import { createShelvingUnit } from './entities/shelving-unit.js';
 import { createDustParticles, updateDustParticles } from './entities/dust-particles.js';
 import { createPegboard } from './entities/pegboard.js';
 import { createWallShelves } from './entities/wall-shelves.js';
+import { createAppliances } from './entities/appliances.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 import { initMinimap, updateMinimap } from './systems/minimap.js';
@@ -182,6 +183,9 @@ async function init() {
 
     // Create wall-mounted shelves on left wall (US-074)
     createWallShelves(scene);
+
+    // Create appliances (washer, dryer, utility sink) on right wall (US-075)
+    createAppliances(scene);
 
     // Create dust particles for atmosphere (US-051)
     createDustParticles(scene);
