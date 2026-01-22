@@ -15,6 +15,7 @@ import { createRevojamStation, updateRevojamAnimation } from './entities/revojam
 import { createLoanscoutStation, updateLoanscoutAnimation } from './entities/loanscout-station.js';
 import { createWeb3Station, updateWeb3Animation } from './entities/web3-station.js';
 import { createWhiteboard } from './entities/whiteboard.js';
+import { createCertifications } from './entities/certifications.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
@@ -123,6 +124,9 @@ async function init() {
 
     // Create whiteboard on back wall (skills display - US-032)
     createWhiteboard(scene);
+
+    // Create certifications display on back wall (US-034)
+    createCertifications(scene);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');
