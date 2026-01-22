@@ -12,6 +12,44 @@ Started: Thu Jan 22 00:07:17 CST 2026
 
 ---
 
+## 2026-01-22 - US-005
+- What was implemented:
+  - Implemented createFloor(scene) function in js/entities/garage.js
+  - Floor is 40x40 unit PlaneGeometry using GARAGE.WIDTH and GARAGE.DEPTH constants
+  - Floor rotated to horizontal (-Math.PI/2 on X axis)
+  - Applied concreteMaterial (gray toon material from materials.js)
+  - Floor positioned at Y=0 with receiveShadow = true
+  - Updated main.js to initialize engine, create floor, and start game loop on user interaction
+- Files changed:
+  - js/entities/garage.js (createFloor implementation)
+  - js/main.js (added engine init, floor creation, game loop start)
+- **Learnings for future iterations:**
+  - PlaneGeometry faces +Z by default, rotate -Math.PI/2 on X to make horizontal
+  - Import scene from engine.js after initEngine() is called to use it
+  - main.js orchestrates initialization: initEngine() → create entities → startLoop() on user action
+
+---
+
+## 2026-01-22 - US-004
+- What was implemented:
+  - Complete game loop implementation in js/core/loop.js
+  - requestAnimationFrame-based animation loop with proper deltaTime calculation
+  - deltaTime calculated in seconds for consistent animation speeds
+  - Callback system: addUpdateCallback(fn), removeUpdateCallback(fn) for registering updates
+  - startLoop(callback) optionally accepts initial callback, stopLoop() cancels animation frame
+  - Loop renders via composer.render() for OutlinePass post-processing effect
+  - Added isRunning() utility function for checking loop state
+  - Duplicate callback prevention in addUpdateCallback
+- Files changed:
+  - js/core/loop.js (complete implementation)
+- **Learnings for future iterations:**
+  - Import composer from engine.js to use post-processing pipeline
+  - deltaTime should be 0 on first frame to prevent large initial jumps
+  - Use for loop instead of forEach for performance in hot path (game loop)
+  - cancelAnimationFrame should be called when stopping to clean up properly
+
+---
+
 ## 2026-01-22 - US-003
 - What was implemented:
   - Complete Three.js rendering pipeline in js/core/engine.js

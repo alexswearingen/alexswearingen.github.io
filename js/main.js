@@ -3,18 +3,19 @@
  * Initializes all modules and starts the game loop
  */
 
-// Import will be used in future stories
-// import { initEngine } from './core/engine.js';
-// import { startLoop } from './core/loop.js';
-// import { createGarage } from './entities/garage.js';
-// import { createRobot } from './entities/robot.js';
-// import { initControls } from './systems/controls.js';
+import { initEngine, scene } from './core/engine.js';
+import { startLoop } from './core/loop.js';
+import { createFloor } from './entities/garage.js';
 
 /**
  * Initialize the application
  */
 async function init() {
-    console.log('Portfolio initialized - scaffolding complete');
+    // Initialize the Three.js engine
+    initEngine();
+
+    // Create the garage floor
+    createFloor(scene);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');
@@ -61,8 +62,8 @@ function startExperience() {
         }, 300);
     }
 
-    console.log('3D experience started');
-    // Game loop will be started here in future stories
+    // Start the game loop
+    startLoop();
 }
 
 /**

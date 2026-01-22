@@ -68,8 +68,8 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - Game loop with requestAnimationFrame, delta time calculation, callback system, and composer.render()"
     },
     {
       "id": "US-005",
@@ -86,8 +86,8 @@
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - 40x40 PlaneGeometry with concreteMaterial, rotated horizontal, receiveShadow enabled, added to scene via main.js"
     },
     {
       "id": "US-006",
