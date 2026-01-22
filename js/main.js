@@ -14,6 +14,7 @@ import { createBrokkStation, updateBrokkAnimation } from './entities/brokk-stati
 import { createRevojamStation, updateRevojamAnimation } from './entities/revojam-station.js';
 import { createLoanscoutStation, updateLoanscoutAnimation } from './entities/loanscout-station.js';
 import { createWeb3Station, updateWeb3Animation } from './entities/web3-station.js';
+import { createWhiteboard } from './entities/whiteboard.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
@@ -119,6 +120,9 @@ async function init() {
 
     // Register Web3 station animation with game loop
     addUpdateCallback(updateWeb3Animation);
+
+    // Create whiteboard on back wall (skills display - US-032)
+    createWhiteboard(scene);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');
