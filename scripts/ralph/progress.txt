@@ -158,3 +158,18 @@ US-001 through US-061 completed. See git history for details.
   - Combined export function `createWallDecorations(scene)` simplifies main.js import pattern
   - Wall-mounted decorative objects at Z=-19.5 (in front of back wall at Z=-20) to avoid z-fighting
 ---
+
+## 2026-01-22 - US-079
+- What was implemented: Cardboard boxes and clutter in corners
+- Files changed:
+  - js/entities/cardboard-boxes.js (new file)
+  - js/main.js (import and createCardboardBoxes call)
+- **Learnings for future iterations:**
+  - Open-topped boxes need 5 separate wall meshes; closed boxes use single BoxGeometry
+  - Packing tape detail (thin flat box on top) adds realism to closed boxes
+  - Leaning objects (lamp pole, poster tube) use rotation.z for tilt effect
+  - Sports equipment uses voxel aesthetic: basketball = cube, bat = handle + barrel boxes
+  - Collision boxes for stacked items should encompass full cluster (width: 3.5, depth: 2.5)
+  - Varied box sizes (1.4x1.2x1.2, 1.0x0.9x1.0, 0.7x0.5x0.7) and materials (cardboard, cardboardDark) create visual interest
+  - Slight rotation (0.1-0.4 radians) on stacked items creates natural, "placed" look
+---

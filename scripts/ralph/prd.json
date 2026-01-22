@@ -340,8 +340,8 @@
         "Typecheck passes"
       ],
       "priority": 61,
-      "passes": false,
-      "notes": "Reference image shows boxes and clutter filling corners"
+      "passes": true,
+      "notes": "Completed - back-right (17,0,-18) and front-left (-17,0,15) stacks with lamp, poster tube, basketball, bat, duffle bag"
     },
     {
       "id": "US-080",
