@@ -896,8 +896,8 @@
         "Typecheck passes"
       ],
       "priority": 50,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - All four props (toolbox, workbench, shelving unit, golf bag) have collision boxes registered. Verified in browser that robot cannot walk through any props. Typecheck passes."
     },
     {
       "id": "US-051",

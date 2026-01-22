@@ -1177,3 +1177,28 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - Frame dimensions: 2.0 wide x 2.4 high x 0.6 deep with 0.06 thick frame members
 
 ---
+
+## 2026-01-22 - US-050
+- What was implemented:
+  - Props collision integration - verified all four props have collision boxes
+  - Collision boxes were already registered in toolbox.js, workbench.js, and shelving-unit.js
+  - Added missing collision box registration to golf-bag.js (registerCollisionBox import and call)
+  - Golf bag collision: {x: 16, z: 10, width: 1.0, depth: 0.8} - slightly larger to account for leaning tilt
+  - Verified all collisions work via Playwright browser testing:
+    - Toolbox: robot stops at z=7.06 (collision at z=7.6-8.4)
+    - Workbench: robot stops at x=-15.6 (collision at x=-15.1 to -12.9)
+    - Shelving unit: robot stops at z=-4.0 (collision at z=-5.45 to -4.55)
+    - Golf bag: robot stops at z=9.06 (collision at z=9.6-10.4)
+  - Robot slides along collision boundaries (AABB collision with wall sliding behavior)
+- Files changed:
+  - js/entities/golf-bag.js (added registerCollisionBox import and call)
+- **Learnings for future iterations:**
+  - Collision boxes for props are registered inside each prop's createXxx() function, not in main.js
+  - Pattern: import registerCollisionBox from collision.js, call registerCollisionBox(id, {x, z, width, depth})
+  - Collision system uses AABB (axis-aligned bounding box) with robot radius (0.5 units)
+  - Robot stops at collision edge minus robot radius (e.g., collisionMinZ - 0.5)
+  - For angled/leaning props like golf bag, make collision box slightly larger to account for tilt
+  - Use window.debug.listObjects() to see all registered collision boxes and their bounds
+  - Use window.debug.teleport(x, z) to quickly test collision from different positions
+
+---
