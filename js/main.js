@@ -18,6 +18,7 @@ import { createWhiteboard } from './entities/whiteboard.js';
 import { createCertifications } from './entities/certifications.js';
 import { createMusicPosters } from './entities/music-posters.js';
 import { createEntertainmentShelf } from './entities/entertainment-shelf.js';
+import { createGolfBag } from './entities/golf-bag.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
@@ -135,6 +136,9 @@ async function init() {
 
     // Create entertainment shelf on right wall (US-038)
     createEntertainmentShelf(scene);
+
+    // Create golf bag prop (US-040)
+    createGolfBag(scene);
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');
