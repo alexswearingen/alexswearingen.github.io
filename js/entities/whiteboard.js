@@ -5,19 +5,13 @@
  */
 
 import * as THREE from 'three';
-import { woodMaterial, createToonMaterial } from '../core/materials.js';
+import { woodMaterial, createToonMaterial, outlineMaterial } from '../core/materials.js';
 import { SKILLS } from '../data/content.js';
 import { INTERACTION } from '../core/constants.js';
 import { stations } from './station.js';
 
 // Outline scale factor - matches robot.js for consistent style
 const OUTLINE_SCALE = 1.06;
-
-// Shared outline material - black backface-only for inverted hull technique
-const outlineMaterial = new THREE.MeshBasicMaterial({
-    color: 0x000000,
-    side: THREE.BackSide
-});
 
 // Whiteboard colors
 const WHITEBOARD_SURFACE = 0xf5f5f0;  // Off-white/cream

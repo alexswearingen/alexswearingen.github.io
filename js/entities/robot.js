@@ -7,19 +7,13 @@
 
 import * as THREE from 'three';
 import { ROBOT, COLORS } from '../core/constants.js';
-import { robotPrimaryMaterial, robotSecondaryMaterial, createToonMaterial } from '../core/materials.js';
+import { robotPrimaryMaterial, robotSecondaryMaterial, createToonMaterial, outlineMaterial } from '../core/materials.js';
 
 // Outline scale factor - how much larger the outline mesh is
 const OUTLINE_SCALE = 1.06;  // 6% larger for nice cel-shaded outlines on voxel shapes
 
 // Module-level robot reference
 export let robot = null;
-
-// Shared outline material - black backface-only for inverted hull technique
-const outlineMaterial = new THREE.MeshBasicMaterial({
-    color: 0x000000,  // Black outlines
-    side: THREE.BackSide
-});
 
 // Special materials for robot details
 const visorMaterial = new THREE.MeshBasicMaterial({

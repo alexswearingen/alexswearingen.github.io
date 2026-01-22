@@ -18,18 +18,12 @@
 
 import * as THREE from 'three';
 import { COLORS, INTERACTION } from '../core/constants.js';
-import { createToonMaterial, woodMaterial, metalMaterial } from '../core/materials.js';
+import { createToonMaterial, woodMaterial, metalMaterial, outlineMaterial } from '../core/materials.js';
 import { ENTERTAINMENT } from '../data/content.js';
 import { stations } from './station.js';
 
 // Outline scale factor for inverted hull technique
 const OUTLINE_SCALE = 1.05;
-
-// Shared outline material - black backface-only
-const outlineMaterial = new THREE.MeshBasicMaterial({
-    color: 0x000000,
-    side: THREE.BackSide
-});
 
 // Custom materials for props
 const katanaYellowMaterial = createToonMaterial(0xf1c40f);  // Yellow

@@ -14,17 +14,11 @@
  */
 
 import * as THREE from 'three';
-import { createToonMaterial, metalMaterial, woodMaterial } from '../core/materials.js';
+import { createToonMaterial, metalMaterial, woodMaterial, outlineMaterial } from '../core/materials.js';
 import { registerCollisionBox } from '../systems/collision.js';
 
 // Outline scale factor for inverted hull technique
 const OUTLINE_SCALE = 1.05;
-
-// Shared outline material - black backface-only
-const outlineMaterial = new THREE.MeshBasicMaterial({
-    color: 0x000000,
-    side: THREE.BackSide
-});
 
 // Shelving materials
 const shelfMetalMaterial = createToonMaterial(0x636e72);    // Gray metal frame

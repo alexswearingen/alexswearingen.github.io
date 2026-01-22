@@ -1,9 +1,14 @@
 /**
  * Garage environment geometry
  * Floor, walls, ceiling, beams
+ *
+ * Performance optimizations:
+ * - Static garage geometry merged where possible
+ * - Ceiling beams use InstancedMesh
  */
 
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { GARAGE } from '../core/constants.js';
 import { concreteMaterial, wallMaterial, woodMaterial } from '../core/materials.js';
 
@@ -41,85 +46,64 @@ export function createFloor(scene) {
 /**
  * Creates the garage walls
  * 4 walls (back, left, right, front with door opening)
+ * Performance: Merges all wall geometries into a single mesh for 1 draw call
  * @param {THREE.Scene} scene - The Three.js scene to add walls to
- * @returns {THREE.Group} - Group containing all wall meshes
+ * @returns {THREE.Mesh} - Single merged wall mesh
  */
 export function createWalls(scene) {
-    const wallGroup = new THREE.Group();
-    wallGroup.name = 'garage-walls';
-
     const wallHeight = GARAGE.HEIGHT;
     const wallWidth = GARAGE.WIDTH;
     const wallDepth = GARAGE.DEPTH;
     const doorWidth = GARAGE.DOOR_WIDTH;
 
+    // Array to collect all wall geometries for merging
+    const wallGeometries = [];
+
     // Back wall (full width, at -Z edge)
     const backWallGeometry = new THREE.PlaneGeometry(wallWidth, wallHeight);
-    const backWall = new THREE.Mesh(backWallGeometry, wallMaterial);
-    backWall.position.set(0, wallHeight / 2, -wallDepth / 2);
-    backWall.castShadow = true;
-    backWall.receiveShadow = true;
-    backWall.name = 'wall-back';
-    wallGroup.add(backWall);
+    backWallGeometry.translate(0, wallHeight / 2, -wallDepth / 2);
+    wallGeometries.push(backWallGeometry);
 
     // Left wall (full depth, at -X edge, rotated to face inward)
     const leftWallGeometry = new THREE.PlaneGeometry(wallDepth, wallHeight);
-    const leftWall = new THREE.Mesh(leftWallGeometry, wallMaterial);
-    leftWall.position.set(-wallWidth / 2, wallHeight / 2, 0);
-    leftWall.rotation.y = Math.PI / 2; // Face inward (+X)
-    leftWall.castShadow = true;
-    leftWall.receiveShadow = true;
-    leftWall.name = 'wall-left';
-    wallGroup.add(leftWall);
+    leftWallGeometry.rotateY(Math.PI / 2);
+    leftWallGeometry.translate(-wallWidth / 2, wallHeight / 2, 0);
+    wallGeometries.push(leftWallGeometry);
 
     // Right wall (full depth, at +X edge, rotated to face inward)
     const rightWallGeometry = new THREE.PlaneGeometry(wallDepth, wallHeight);
-    const rightWall = new THREE.Mesh(rightWallGeometry, wallMaterial);
-    rightWall.position.set(wallWidth / 2, wallHeight / 2, 0);
-    rightWall.rotation.y = -Math.PI / 2; // Face inward (-X)
-    rightWall.castShadow = true;
-    rightWall.receiveShadow = true;
-    rightWall.name = 'wall-right';
-    wallGroup.add(rightWall);
+    rightWallGeometry.rotateY(-Math.PI / 2);
+    rightWallGeometry.translate(wallWidth / 2, wallHeight / 2, 0);
+    wallGeometries.push(rightWallGeometry);
 
-    // Front wall - split into two sections with 14-unit door opening in center
-    // Door opening is centered at X=0, so:
-    // Left section: from -wallWidth/2 to -doorWidth/2
-    // Right section: from +doorWidth/2 to +wallWidth/2
+    // Front wall - split into two sections with door opening
     const frontSectionWidth = (wallWidth - doorWidth) / 2;
 
     // Front wall left section
     const frontLeftGeometry = new THREE.PlaneGeometry(frontSectionWidth, wallHeight);
-    const frontLeftWall = new THREE.Mesh(frontLeftGeometry, wallMaterial);
-    frontLeftWall.position.set(
-        -wallWidth / 2 + frontSectionWidth / 2,
-        wallHeight / 2,
-        wallDepth / 2
-    );
-    frontLeftWall.rotation.y = Math.PI; // Face inward (-Z)
-    frontLeftWall.castShadow = true;
-    frontLeftWall.receiveShadow = true;
-    frontLeftWall.name = 'wall-front-left';
-    wallGroup.add(frontLeftWall);
+    frontLeftGeometry.rotateY(Math.PI);
+    frontLeftGeometry.translate(-wallWidth / 2 + frontSectionWidth / 2, wallHeight / 2, wallDepth / 2);
+    wallGeometries.push(frontLeftGeometry);
 
     // Front wall right section
     const frontRightGeometry = new THREE.PlaneGeometry(frontSectionWidth, wallHeight);
-    const frontRightWall = new THREE.Mesh(frontRightGeometry, wallMaterial);
-    frontRightWall.position.set(
-        wallWidth / 2 - frontSectionWidth / 2,
-        wallHeight / 2,
-        wallDepth / 2
-    );
-    frontRightWall.rotation.y = Math.PI; // Face inward (-Z)
-    frontRightWall.castShadow = true;
-    frontRightWall.receiveShadow = true;
-    frontRightWall.name = 'wall-front-right';
-    wallGroup.add(frontRightWall);
+    frontRightGeometry.rotateY(Math.PI);
+    frontRightGeometry.translate(wallWidth / 2 - frontSectionWidth / 2, wallHeight / 2, wallDepth / 2);
+    wallGeometries.push(frontRightGeometry);
 
-    // Add wall group to scene
-    scene.add(wallGroup);
+    // Merge all wall geometries into one
+    const mergedWallGeometry = mergeGeometries(wallGeometries);
 
-    return wallGroup;
+    // Create single mesh from merged geometry
+    const walls = new THREE.Mesh(mergedWallGeometry, wallMaterial);
+    walls.castShadow = true;
+    walls.receiveShadow = true;
+    walls.name = 'garage-walls-merged';
+
+    // Add to scene
+    scene.add(walls);
+
+    return walls;
 }
 
 /**
@@ -146,7 +130,7 @@ export function createCeiling(scene) {
     ceilingGroup.add(ceiling);
 
     // Wooden beams spanning width of garage
-    // 5 beams evenly spaced along Z axis
+    // Using InstancedMesh for better performance (single draw call for all beams)
     const beamCount = 5;
     const beamWidth = ceilingWidth * 0.95; // Slightly shorter than ceiling
     const beamHeight = 0.8; // Beam thickness (vertical)
@@ -159,17 +143,21 @@ export function createCeiling(scene) {
 
     const beamGeometry = new THREE.BoxGeometry(beamWidth, beamHeight, beamDepth);
 
-    for (let i = 0; i < beamCount; i++) {
-        const beam = new THREE.Mesh(beamGeometry, woodMaterial);
-        const zPos = startZ + i * beamSpacing;
+    // Use InstancedMesh for all beams - single draw call
+    const beamInstancedMesh = new THREE.InstancedMesh(beamGeometry, woodMaterial, beamCount);
+    beamInstancedMesh.name = 'ceiling-beams-instanced';
+    beamInstancedMesh.castShadow = true;
+    beamInstancedMesh.receiveShadow = true;
 
-        // Position beam just below ceiling
-        beam.position.set(0, ceilingHeight - beamHeight / 2, zPos);
-        beam.castShadow = true;
-        beam.receiveShadow = true;
-        beam.name = `ceiling-beam-${i}`;
-        ceilingGroup.add(beam);
+    const matrix = new THREE.Matrix4();
+    for (let i = 0; i < beamCount; i++) {
+        const zPos = startZ + i * beamSpacing;
+        matrix.setPosition(0, ceilingHeight - beamHeight / 2, zPos);
+        beamInstancedMesh.setMatrixAt(i, matrix);
     }
+    beamInstancedMesh.instanceMatrix.needsUpdate = true;
+
+    ceilingGroup.add(beamInstancedMesh);
 
     // Add ceiling group to scene
     scene.add(ceilingGroup);

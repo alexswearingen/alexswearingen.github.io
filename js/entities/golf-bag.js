@@ -14,17 +14,11 @@
  */
 
 import * as THREE from 'three';
-import { createToonMaterial } from '../core/materials.js';
+import { createToonMaterial, outlineMaterial } from '../core/materials.js';
 import { registerCollisionBox } from '../systems/collision.js';
 
 // Outline scale factor for inverted hull technique
 const OUTLINE_SCALE = 1.05;
-
-// Shared outline material - black backface-only
-const outlineMaterial = new THREE.MeshBasicMaterial({
-    color: 0x000000,
-    side: THREE.BackSide
-});
 
 // Golf bag materials
 const navyMaterial = createToonMaterial(0x1e3a5f);       // Navy blue body

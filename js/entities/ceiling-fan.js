@@ -5,17 +5,11 @@
  */
 
 import * as THREE from 'three';
-import { woodMaterial, metalMaterial, createToonMaterial } from '../core/materials.js';
+import { woodMaterial, metalMaterial, createToonMaterial, outlineMaterial } from '../core/materials.js';
 import { ANIMATION } from '../core/constants.js';
 
 // Outline scale factor - how much larger the outline mesh is
 const OUTLINE_SCALE = 1.06;
-
-// Shared outline material - black backface-only for inverted hull technique
-const outlineMaterial = new THREE.MeshBasicMaterial({
-    color: 0x000000,
-    side: THREE.BackSide
-});
 
 // White toon material for fan blades
 const whiteMaterial = createToonMaterial(0xf5f5f0);

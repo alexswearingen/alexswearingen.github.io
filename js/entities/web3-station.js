@@ -15,17 +15,11 @@
 import * as THREE from 'three';
 import { STATION_POSITIONS, COLORS, ANIMATION } from '../core/constants.js';
 import { createStation } from './station.js';
-import { metalMaterial, woodMaterial, web3AccentMaterial, createToonMaterial } from '../core/materials.js';
+import { metalMaterial, woodMaterial, web3AccentMaterial, createToonMaterial, outlineMaterial } from '../core/materials.js';
 import { WORK_HISTORY } from '../data/content.js';
 
 // Outline scale factor for inverted hull technique
 const OUTLINE_SCALE = 1.05;
-
-// Shared outline material - black backface-only
-const outlineMaterial = new THREE.MeshBasicMaterial({
-    color: 0x000000,
-    side: THREE.BackSide
-});
 
 // Purple emissive material for floating polyhedron
 const polyhedronMaterial = new THREE.MeshBasicMaterial({

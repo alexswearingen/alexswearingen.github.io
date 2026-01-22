@@ -98,3 +98,10 @@ export const revojamEmissiveMaterial = createEmissiveAccentMaterial(COLORS.ACCEN
 export const loanscoutEmissiveMaterial = createEmissiveAccentMaterial(COLORS.ACCENT_GREEN, 0.3);
 export const web3EmissiveMaterial = createEmissiveAccentMaterial(COLORS.ACCENT_PURPLE, 0.5);
 
+// Shared outline material for inverted hull technique - used by all entities
+// IMPORTANT: All entities should import this instead of creating their own
+export const outlineMaterial = new THREE.MeshBasicMaterial({
+    color: 0x000000,
+    side: THREE.BackSide
+});
+

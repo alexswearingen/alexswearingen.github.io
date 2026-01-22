@@ -15,19 +15,13 @@
  */
 
 import * as THREE from 'three';
-import { createToonMaterial, woodMaterial } from '../core/materials.js';
+import { createToonMaterial, woodMaterial, outlineMaterial } from '../core/materials.js';
 import { HOBBIES } from '../data/content.js';
 import { INTERACTION } from '../core/constants.js';
 import { stations } from './station.js';
 
 // Outline scale factor for inverted hull technique
 const OUTLINE_SCALE = 1.06;
-
-// Shared outline material - black backface-only
-const outlineMaterial = new THREE.MeshBasicMaterial({
-    color: 0x000000,
-    side: THREE.BackSide
-});
 
 // Catan resource tile materials
 const forestMaterial = createToonMaterial(0x27ae60);   // Green - Wood/Forest

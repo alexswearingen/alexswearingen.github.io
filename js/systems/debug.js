@@ -20,7 +20,7 @@
  *   debug.getRobotPosition() - Get current robot position
  */
 
-import { camera } from '../core/engine.js';
+import { camera, renderer, scene } from '../core/engine.js';
 import { robot } from '../entities/robot.js';
 import { GARAGE } from '../core/constants.js';
 import { getStations } from '../entities/station.js';
@@ -256,6 +256,26 @@ export function getFloorPlan() {
 }
 
 /**
+ * Get renderer performance stats
+ * Shows draw calls, triangles, textures, geometries
+ */
+export function getRendererStats() {
+    if (!renderer) return { error: 'Renderer not initialized' };
+
+    const info = renderer.info;
+    return {
+        drawCalls: info.render.calls,
+        triangles: info.render.triangles,
+        points: info.render.points,
+        lines: info.render.lines,
+        memory: {
+            geometries: info.memory.geometries,
+            textures: info.memory.textures
+        }
+    };
+}
+
+/**
  * Get scene info summary
  */
 export function getSceneInfo() {
@@ -307,6 +327,10 @@ if (typeof window !== 'undefined') {
         getFloorPlan,
         getRobotPosition,
         getSceneInfo,
+        getRendererStats,
+        // Expose renderer and scene for advanced debugging
+        get _renderer() { return renderer; },
+        get _scene() { return scene; },
         isDevMode,
         help: () => {
             console.log(`
@@ -316,6 +340,8 @@ debug.setCamera(mode)  - Set camera view
 
 debug.teleport(x, z)   - Teleport robot to position
   Range: -18 to 18 for both x and z
+
+debug.getRendererStats() - Get draw calls, triangles, memory info
 
 debug.listObjects()    - List all stations and objects
 debug.getFloorPlan()   - ASCII floor plan of garage
