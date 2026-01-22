@@ -463,8 +463,8 @@
         "Typecheck passes"
       ],
       "priority": 26,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - Created js/entities/loanscout-station.js with voxel-style office desk, dual monitors, indicator lights, keyboard/mouse, green accents. All parts have inverted hull outlines. Animation exports ready for US-028."
     },
     {
       "id": "US-027",
@@ -480,8 +480,8 @@
         "Typecheck passes"
       ],
       "priority": 27,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - LoanScout station already integrated with content.js WORK_HISTORY.loanScout in US-026. Collision box registered by station factory. Outlines use inverted hull technique. Verified full interaction flow: approach, prompt, E key, modal with all content."
     },
     {
       "id": "US-028",

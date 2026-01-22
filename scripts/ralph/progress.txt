@@ -606,3 +606,52 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - Always verify animation is registered in game loop (main.js addUpdateCallback calls)
 
 ---
+
+## 2026-01-22 - US-026
+- What was implemented:
+  - Created js/entities/loanscout-station.js with professional financial-themed voxel workstation
+  - Chunky office desk with 4 blocky box legs (gray deskMaterial)
+  - Dual retro-style CRT monitors with green screen glows (screenGlowMaterial)
+  - Small indicator light BOXES (not spheres) with emissive green material on right monitor side
+  - Keyboard and mouse props on desk surface
+  - Green accent strip along front edge of desk (loanscoutAccentMaterial)
+  - Green organizer box in top left corner for visual interest
+  - All major parts have black inverted hull outlines using addOutlineToMesh()
+  - Integrated with content.js WORK_HISTORY.loanScout for contentData
+  - Animation exports ready: updateLoanscoutAnimation() with indicator light blinking and screen pulse
+  - Registered in main.js: createLoanscoutStation() added to scene, animation registered with addUpdateCallback()
+- Files changed:
+  - js/entities/loanscout-station.js (new file - complete station visual design)
+  - js/main.js (import and create LoanScout station, register animation)
+- **Learnings for future iterations:**
+  - Follow Brokk station pattern: import materials, create station factory, add meshes, add outlines
+  - Indicator lights use cloned material for independent opacity control (each light blinks independently)
+  - Use userData.blinkPhase to stagger animations (each light gets different phase offset)
+  - Green accent color from COLORS.ACCENT_GREEN (0x00b894) - good for financial/money theme
+  - Screen glow material needs to be cloned for left/right monitors to animate independently
+
+---
+
+## 2026-01-22 - US-027
+- What was implemented:
+  - Verified LoanScout station integration with content.js data (already complete from US-026)
+  - loanscout-station.js already imports WORK_HISTORY from content.js
+  - contentData uses WORK_HISTORY.loanScout with all required fields:
+    - title: 'LoanScout'
+    - subtitle: 'Web Developer'
+    - dates: 'Spring 2023 - Fall 2023'
+    - description: Financial data platform for loan professionals
+    - achievements: UI redesign, loan filing search, OpenAI API, data visualization
+  - Collision box already registered by createStation() factory
+  - Outlines already applied via inverted hull technique (not OutlinePass.selectedObjects)
+  - Verified full interaction flow via Playwright: approach station → prompt shows → E key → modal with correct content
+- Files changed:
+  - None - all code was already in place from US-026
+- **Learnings for future iterations:**
+  - US-026 (visual design) included the integration work - check if contentData is already set up
+  - Pattern for station integration: import WORK_HISTORY from content.js, use xyz.title/subtitle/dates/description/achievements
+  - Collision box is automatically registered by createStation() factory - no additional work needed
+  - Outlines are applied per-mesh with addOutlineToMesh() in the visual design story
+  - The acceptance criteria "Add station meshes to outlinePass.selectedObjects" is outdated - use inverted hull instead
+
+---
