@@ -12,6 +12,14 @@ let isInitialized = false;
 // Master gain node for volume control
 let masterGain = null;
 
+// Ambient hum state
+let ambientOscillator = null;
+let ambientGain = null;
+
+// Footstep throttling
+let lastFootstepTime = 0;
+const FOOTSTEP_INTERVAL = 250; // ms between footsteps
+
 /**
  * Initialize the audio system
  * Creates AudioContext on first user interaction (required by browsers)
@@ -38,6 +46,9 @@ export function initAudio() {
 
             isInitialized = true;
 
+            // Start ambient hum (will be silent until unmuted)
+            startAmbientHum();
+
             // Remove the initialization listeners after first interaction
             document.removeEventListener('click', initOnInteraction);
             document.removeEventListener('keydown', initOnInteraction);
@@ -63,14 +74,20 @@ function ensureAudioContextRunning() {
 /**
  * Play a footstep sound (procedurally generated)
  * Short noise burst for robot movement
+ * Throttled to prevent overlapping sounds
  */
 export function playFootstep() {
     if (isMuted || !audioContext || !isInitialized) return;
 
+    // Throttle footsteps to prevent overlapping
+    const now = performance.now();
+    if (now - lastFootstepTime < FOOTSTEP_INTERVAL) return;
+    lastFootstepTime = now;
+
     ensureAudioContextRunning();
 
     try {
-        const now = audioContext.currentTime;
+        const audioNow = audioContext.currentTime;
 
         // Create a short noise burst for footstep
         const bufferSize = audioContext.sampleRate * 0.05; // 50ms
@@ -95,7 +112,7 @@ export function playFootstep() {
 
         // Create gain for this sound
         const gain = audioContext.createGain();
-        gain.gain.value = 0.15; // Quiet
+        gain.gain.value = 0.08; // Very quiet - subtle background level
 
         // Connect: source -> filter -> gain -> master
         source.connect(filter);
@@ -103,8 +120,8 @@ export function playFootstep() {
         gain.connect(masterGain);
 
         // Play the sound
-        source.start(now);
-        source.stop(now + 0.05);
+        source.start(audioNow);
+        source.stop(audioNow + 0.05);
     } catch (e) {
         // Silently fail - audio is not critical
     }
@@ -170,4 +187,45 @@ export function toggleMute() {
  */
 export function isMutedState() {
     return isMuted;
+}
+
+/**
+ * Start ambient hum - low oscillator drone (very quiet)
+ * Creates a continuous background atmosphere
+ */
+function startAmbientHum() {
+    if (!audioContext || ambientOscillator) return;
+
+    try {
+        // Create low frequency oscillator for ambient hum
+        ambientOscillator = audioContext.createOscillator();
+        ambientOscillator.type = 'sine';
+        ambientOscillator.frequency.value = 60; // Low hum (60Hz - electrical hum frequency)
+
+        // Create second oscillator for slight detuning (richer sound)
+        const ambientOsc2 = audioContext.createOscillator();
+        ambientOsc2.type = 'sine';
+        ambientOsc2.frequency.value = 62; // Slightly detuned for warmth
+
+        // Create gain node for ambient volume
+        ambientGain = audioContext.createGain();
+        ambientGain.gain.value = 0.015; // Very quiet - barely perceptible
+
+        // Create lowpass filter to soften the sound
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 200;
+
+        // Connect both oscillators through filter and gain to master
+        ambientOscillator.connect(filter);
+        ambientOsc2.connect(filter);
+        filter.connect(ambientGain);
+        ambientGain.connect(masterGain);
+
+        // Start the oscillators
+        ambientOscillator.start();
+        ambientOsc2.start();
+    } catch (e) {
+        // Silently fail - audio is not critical
+    }
 }

@@ -10,6 +10,7 @@ import { addUpdateCallback } from '../core/loop.js';
 import { checkBoundaries, checkObjectCollisions } from './collision.js';
 import { isModalOpen } from './ui.js';
 import { isDebugCameraActive } from './debug.js';
+import { playFootstep } from './audio.js';
 
 // Track which keys are currently pressed
 const keysPressed = {
@@ -238,6 +239,9 @@ function updateMovement(deltaTime) {
 
         // Smoothly lerp toward target rotation
         robot.rotation.y = lerpAngle(robot.rotation.y, targetRotation, ROBOT.ROTATION_LERP);
+
+        // Play footstep sound (throttled internally)
+        playFootstep();
     }
 }
 

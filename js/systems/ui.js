@@ -3,7 +3,7 @@
  * Modals, prompts, minimap, audio toggle
  */
 
-import { toggleMute, isMutedState } from './audio.js';
+import { toggleMute, isMutedState, playUIClick } from './audio.js';
 
 // Track modal state for disabling robot movement
 export let isModalOpen = false;
@@ -165,6 +165,9 @@ export function showModal(content) {
 
     // Hide interaction prompt while modal is open
     hideInteractionPrompt();
+
+    // Play UI click sound on modal open
+    playUIClick();
 }
 
 /**
@@ -176,6 +179,9 @@ export function hideModal() {
     if (modalOverlay) {
         modalOverlay.classList.add('hidden');
     }
+
+    // Play UI click sound on modal close
+    playUIClick();
 }
 
 export function updateMinimap(robotPosition) {
