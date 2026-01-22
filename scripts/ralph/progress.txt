@@ -982,3 +982,26 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - No visible meshes needed for interaction point - just userData and stations array registration
 
 ---
+
+## 2026-01-22 - US-043
+- What was implemented:
+  - Created js/entities/contact-sign.js with contact sign visual design
+  - Sign positioned at (8, 5, 16) near the garage entrance
+  - 3x2 unit sign surface with dark background (0x1a1a2e)
+  - Bright teal accent frame (0x00b8d4) to draw attention and be noticeable
+  - Decorative voxel-style icons: envelope, @ symbol representation, horizontal line, location pin
+  - All major parts have black inverted hull outlines using addOutlineToMesh() pattern
+  - Integration with stations array for interaction system
+  - contentData populated from CONTACT in content.js (title, subtitle, email, LinkedIn, GitHub, location)
+  - Integrated into main.js with createContactSign(scene) call
+- Files changed:
+  - js/entities/contact-sign.js (new file - complete contact sign visual design)
+  - js/main.js (import createContactSign, add call in init)
+- **Learnings for future iterations:**
+  - Contact sign uses same station pattern: userData with contentData, push to stations array
+  - Bright accent colors (teal 0x00b8d4) effectively draw attention in the dark garage environment
+  - Voxel-style icons can be created with small BoxGeometry arrangements (envelope, @ symbol, pin)
+  - Sign positioned near garage entrance (Z=16) is easily discoverable but not obtrusive
+  - US-043 included interaction integration work - US-044 will verify the modal behavior more thoroughly
+
+---
