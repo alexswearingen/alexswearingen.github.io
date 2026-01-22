@@ -3,8 +3,9 @@
  * WASD movement, E interaction, Escape for modal
  */
 
-import { ROBOT } from '../core/constants.js';
+import { ROBOT, CAMERA } from '../core/constants.js';
 import { robot } from '../entities/robot.js';
+import { camera } from '../core/engine.js';
 import { addUpdateCallback } from '../core/loop.js';
 
 // Track which keys are currently pressed
@@ -25,7 +26,7 @@ const keysPressed = {
 let eKeyJustPressed = false;
 
 /**
- * Initialize keyboard event listeners
+ * Initialize keyboard event listeners and camera follow system
  */
 export function initControls() {
     document.addEventListener('keydown', handleKeyDown);
@@ -33,6 +34,9 @@ export function initControls() {
 
     // Register the movement update callback with the game loop
     addUpdateCallback(updateMovement);
+
+    // Register the camera update callback with the game loop
+    addUpdateCallback(updateCamera);
 }
 
 /**
@@ -215,6 +219,28 @@ function updateMovement(deltaTime) {
         // Smoothly lerp toward target rotation
         robot.rotation.y = lerpAngle(robot.rotation.y, targetRotation, ROBOT.ROTATION_LERP);
     }
+}
+
+/**
+ * Update camera position to follow the robot smoothly
+ * Uses offset from constants and lerp for smooth following
+ * @param {number} deltaTime - Time since last frame in seconds
+ */
+function updateCamera(deltaTime) {
+    if (!robot || !camera) return;
+
+    // Calculate target camera position: robot position + offset
+    const targetX = robot.position.x + CAMERA.OFFSET.x;
+    const targetY = robot.position.y + CAMERA.OFFSET.y;
+    const targetZ = robot.position.z + CAMERA.OFFSET.z;
+
+    // Smoothly lerp camera position toward target
+    camera.position.x += (targetX - camera.position.x) * CAMERA.LERP_FACTOR;
+    camera.position.y += (targetY - camera.position.y) * CAMERA.LERP_FACTOR;
+    camera.position.z += (targetZ - camera.position.z) * CAMERA.LERP_FACTOR;
+
+    // Camera always looks at robot position
+    camera.lookAt(robot.position);
 }
 
 /**
