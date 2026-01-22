@@ -1038,8 +1038,8 @@
         "Typecheck passes"
       ],
       "priority": 58,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - Resume fallback toggle logic was already fully implemented in US-056. Verified via Playwright: Skip to Resume button hides 3D canvas/minimap and shows resume section, Back to 3D Experience button hides resume and shows canvas/minimap, game loop starts on return, view toggles cleanly without page reload. Typecheck passes."
     },
     {
       "id": "US-059",

@@ -1376,3 +1376,30 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - Contact link pattern: email uses mailto:, external URLs use target="_blank" rel="noopener noreferrer"
   - CSS grid with auto-fit minmax() creates responsive columns without media queries for simpler layouts
 
+
+## 2026-01-22 - US-058
+- What was implemented:
+  - Verified resume fallback toggle logic was already fully implemented in US-056
+  - showResume() function in main.js handles:
+    - Hiding loading screen (style.display = 'none')
+    - Hiding 3D canvas container (style.display = 'none')
+    - Hiding minimap (style.display = 'none')
+    - Populating resume content from content.js via populateResume()
+    - Showing resume section (classList.remove('hidden'))
+  - hideResume() function in main.js handles:
+    - Hiding resume section (classList.add('hidden'))
+    - Showing canvas container (style.display = 'block')
+    - Showing minimap (style.display = 'block')
+    - Starting game loop via startLoop()
+  - Event listeners attached in init(): skip-to-resume → showResume(), back-to-3d → hideResume()
+  - View toggles cleanly without page reload (same URL throughout)
+- Files changed:
+  - scripts/ralph/prd.json (marked US-058 as passes: true)
+- **Learnings for future iterations:**
+  - US-056 (structure) was comprehensive and already included complete toggle logic
+  - Verification-only stories may not require code changes, just confirmation
+  - Toggle pattern: hide element with style.display = 'none', show with style.display = 'block'
+  - Hidden class pattern used for resume section, style.display used for canvas/minimap
+  - startLoop() is safe to call multiple times (no duplicate loop issue)
+
+---
