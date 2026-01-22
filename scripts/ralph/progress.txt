@@ -512,3 +512,76 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - Test interaction flow end-to-end: proximity → prompt → E key → modal → Escape to close
 
 ---
+
+## 2026-01-22 - US-022
+- What was implemented:
+  - Brokk AI station animation system in js/entities/brokk-station.js
+  - updateBrokkAnimation(deltaTime) function registered with game loop
+  - Hologram cube rotates on Y axis at ANIMATION.HOLOGRAM_ROTATION speed (~0.01 rad/frame)
+  - Inner cube rotates in opposite direction at 1.5x speed for visual depth
+  - Hologram bobs up/down using sine wave with ANIMATION.HOLOGRAM_BOB_AMPLITUDE (0.1 units)
+  - Monitor screen glow pulses subtly (opacity oscillates between 0.15 and 0.35)
+  - Stored baseY position in userData for bobbing animation reference
+  - Cloned screenGlowMaterial for independent opacity control on each monitor
+- Files changed:
+  - js/entities/brokk-station.js (added animation exports, updateBrokkAnimation function)
+  - js/main.js (import updateBrokkAnimation, register with addUpdateCallback)
+- **Learnings for future iterations:**
+  - Store base position in mesh.userData.baseY for animations that oscillate around an origin
+  - Clone materials when you need independent property control (e.g., different opacity per mesh)
+  - ANIMATION constants in constants.js already define standard animation speeds
+  - Pattern for station animation: export updateXxxAnimation(deltaTime), register in main.js with addUpdateCallback()
+  - Inner element rotating opposite direction creates visual depth/interest
+  - Use animationTime accumulator for time-based animations (sine waves, etc.)
+
+---
+
+## 2026-01-22 - US-023
+- What was implemented:
+  - Created js/entities/revojam-station.js with music-themed voxel jukebox design
+  - Main jukebox body: chunky wood-colored box with orange top cap
+  - Vinyl record: flat square BoxGeometry (voxel style) with orange center label
+  - Two speakers on front: metal frame boxes with darker center cones
+  - Three colorful control buttons (orange, green, blue) at bottom
+  - Orange accent stripe across front for music theme color
+  - Four dark feet at bottom corners
+  - All major parts have black inverted hull outlines using addOutlineToMesh()
+  - Animation exports ready: updateRevojamAnimation(), vinyl rotation, speaker pulse
+  - Integrated into main.js: createRevojamStation(), added to scene, animation registered
+  - Station positioned at STATION_POSITIONS.REVOJAM (-12, -10)
+- Files changed:
+  - js/entities/revojam-station.js (new file - complete station visual design)
+  - js/main.js (import and create Revojam station, register animation)
+- **Learnings for future iterations:**
+  - Vinyl record as flat box (voxel style) - no CylinderGeometry for round shapes
+  - Speaker design: frame box + smaller dark center box for cone effect
+  - Station colors: wood body + orange accents for music theme (COLORS.ACCENT_ORANGE)
+  - Animation pattern established: rotate vinyl (z-axis), pulse speaker cones (scale)
+  - US-024 will integrate with content.js WORK_HISTORY.revojam for contentData
+  - US-025 will enable the pre-built updateRevojamAnimation() function
+
+---
+
+## 2026-01-22 - US-024
+- What was implemented:
+  - Verified Revojam station integration with content.js data (already complete from US-023)
+  - revojam-station.js already imports WORK_HISTORY from content.js
+  - contentData uses WORK_HISTORY.revojam with all required fields:
+    - title: 'Revojam'
+    - subtitle: 'Founder'
+    - dates: 'Spring 2020 - Winter 2023'
+    - description: Music streaming platform for content creators
+    - achievements: Django/React, Spotify API, AWS deployment, DMCA filtering
+  - Collision box already registered by createStation() factory
+  - Outlines already applied via inverted hull technique (not OutlinePass.selectedObjects)
+  - Verified full interaction flow via Playwright: approach station → prompt shows → E key → modal with correct content
+- Files changed:
+  - None - all code was already in place from US-023
+- **Learnings for future iterations:**
+  - US-023 (visual design) often includes integration work - check if contentData is already set up
+  - Pattern for station integration: import WORK_HISTORY from content.js, use xyz.title/subtitle/dates/description/achievements
+  - Collision box is automatically registered by createStation() factory - no additional work needed
+  - Outlines are applied per-mesh with addOutlineToMesh() in the visual design story
+  - The acceptance criteria "Add station meshes to outlinePass.selectedObjects" is outdated - use inverted hull instead
+
+---
