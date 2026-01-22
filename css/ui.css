@@ -157,3 +157,17 @@
     color: #6c5ce7;
     text-decoration: underline;
 }
+
+/* Minimap */
+#minimap {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 150px;
+    height: 150px;
+    background-color: rgba(26, 26, 46, 0.85);
+    border: 2px solid rgba(64, 64, 96, 0.8);
+    border-radius: 8px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}

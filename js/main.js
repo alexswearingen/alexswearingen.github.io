@@ -28,6 +28,7 @@ import { createShelvingUnit } from './entities/shelving-unit.js';
 import { createDustParticles, updateDustParticles } from './entities/dust-particles.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
+import { initMinimap, updateMinimap } from './systems/minimap.js';
 
 // Track the currently nearby station for interaction
 let nearbyStation = null;
@@ -177,6 +178,12 @@ async function init() {
 
     // Initialize debug controls (keyboard shortcuts for camera views)
     initDebugControls();
+
+    // Initialize minimap (US-054)
+    initMinimap();
+
+    // Register minimap update with game loop
+    addUpdateCallback(updateMinimap);
 
     // Dev mode: skip loading screen entirely
     if (isDevMode) {
