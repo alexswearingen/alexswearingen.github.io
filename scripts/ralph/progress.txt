@@ -189,3 +189,17 @@ US-001 through US-061 completed. See git history for details.
   - Rotating mini fridge 90 degrees (Math.PI/2) makes it face into the room
   - Updating interaction point position when grouping props ensures robot can reach from multiple angles
 ---
+
+## 2026-01-22 - US-062
+- What was implemented: Audio mute toggle UI button functionality
+- Files changed:
+  - js/systems/ui.js (modified - added audio toggle handler and helper functions)
+  - js/main.js (modified - added hideAudioToggle/showAudioToggle for resume view transitions)
+- **Learnings for future iterations:**
+  - HTML button, CSS styling, and audio.js toggle functions already existed - only needed to wire up click handler
+  - Audio toggle button element is in index.html at lines 111-115 with emoji icons
+  - CSS for audio toggle is in ui.css at lines 175-230, includes hover states and active indicator
+  - Pattern: import functions from audio.js (toggleMute, isMutedState), then update UI class based on state
+  - hideAudioToggle/showAudioToggle exported for use when switching between 3D and resume views
+  - Browser caching can be aggressive - may need to restart Chrome with fresh profile when testing module changes
+---

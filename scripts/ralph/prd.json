@@ -17,8 +17,8 @@
         "Typecheck passes"
       ],
       "priority": 62,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - wired up audio toggle button with click handler in ui.js, imports toggleMute/isMutedState from audio.js"
     },
     {
       "id": "US-063",
