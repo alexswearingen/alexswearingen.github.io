@@ -29,6 +29,7 @@ import { createDustParticles, updateDustParticles } from './entities/dust-partic
 import { createPegboard } from './entities/pegboard.js';
 import { createWallShelves } from './entities/wall-shelves.js';
 import { createAppliances } from './entities/appliances.js';
+import { createWallDecorations } from './entities/wall-clock.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 import { initMinimap, updateMinimap } from './systems/minimap.js';
@@ -186,6 +187,9 @@ async function init() {
 
     // Create appliances (washer, dryer, utility sink) on right wall (US-075)
     createAppliances(scene);
+
+    // Create wall clock and bulletin board on back wall (US-078)
+    createWallDecorations(scene);
 
     // Create dust particles for atmosphere (US-051)
     createDustParticles(scene);
