@@ -1075,3 +1075,22 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - Blade overlap with motor (bladeOffset - 0.1) creates smooth visual connection
 
 ---
+
+## 2026-01-22 - US-046
+- What was implemented:
+  - Verified ceiling fan animation was already fully implemented in US-045
+  - Fan rotation at 0.03 rad/frame via ANIMATION.FAN_ROTATION constant
+  - spinGroup.rotation.y += ANIMATION.FAN_ROTATION applies rotation to motor + blades group
+  - Animation already registered in main.js: addUpdateCallback(updateCeilingFanAnimation)
+  - Rotating shadow confirmed visible on floor via Playwright screenshots
+  - Esbuild syntax checks pass for both ceiling-fan.js and main.js
+- Files changed:
+  - None - all animation code was already in place from US-045
+- **Learnings for future iterations:**
+  - US-045 (visual design) included complete animation implementation - animation stories may be redundant
+  - Pattern: visual design story creates animation function + registers it, animation story just verifies
+  - Fan shadow rotation is visible on floor because fan blades have castShadow = true
+  - The nested group pattern (outer static group, inner spinning group) allows selective rotation
+  - Take multiple screenshots with delay to verify animation is actually running
+
+---
