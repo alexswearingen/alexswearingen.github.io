@@ -1047,3 +1047,31 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - Adding `rel="noopener noreferrer"` to external links is security best practice
 
 ---
+
+## 2026-01-22 - US-045
+- What was implemented:
+  - Created js/entities/ceiling-fan.js with voxel-style ceiling fan
+  - Ceiling fan positioned at (0, 14.5, 0) - center of garage, just below ceiling
+  - Motor housing: chunky metal box (0.6x0.4x0.6) with motor cap below
+  - 4 fan blades: flat white rectangular boxes (2.5x0.08x0.5) at 90° intervals
+  - Blade mounts connecting blades to motor housing
+  - Mount rod and ceiling plate (static, don't spin)
+  - All parts have black inverted hull outlines using addOutlineToMesh()
+  - Spinning parts grouped in 'fan-spin-group' for animation
+  - updateCeilingFanAnimation() exported and registered with game loop
+  - Fan rotates at ANIMATION.FAN_ROTATION speed (0.03 rad/frame)
+  - Total geometry ~144 triangles (well under 200 limit)
+  - Also added debug.js system for dev mode testing
+- Files changed:
+  - js/entities/ceiling-fan.js (new file - complete ceiling fan visual design)
+  - js/main.js (import createCeilingFan/updateCeilingFanAnimation, add to scene, register animation)
+  - js/systems/debug.js (new file - camera controls for testing)
+  - js/systems/controls.js (skip camera follow when debug camera active)
+- **Learnings for future iterations:**
+  - Ceiling fan uses nested groups: outer group for static parts, inner 'fan-spin-group' for rotating parts
+  - Animation is already implemented with the visual design - US-046 may be redundant
+  - White toon material (0xf5f5f0) looks good for fan blades against garage ceiling
+  - Blade pitch (rotation.z = 0.1) adds realism without complexity
+  - Blade overlap with motor (bladeOffset - 0.1) creates smooth visual connection
+
+---

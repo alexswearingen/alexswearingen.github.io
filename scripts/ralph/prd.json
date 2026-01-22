@@ -806,8 +806,8 @@
         "Typecheck passes"
       ],
       "priority": 45,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - Created js/entities/ceiling-fan.js with voxel-style fan: chunky box motor, 4 white blade boxes, mount rod/plate, all parts have inverted hull outlines. Animation function (updateCeilingFanAnimation) implemented and registered with game loop. ~144 triangles total."
     },
     {
       "id": "US-046",
