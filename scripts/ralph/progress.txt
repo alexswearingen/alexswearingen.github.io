@@ -1273,3 +1273,28 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - Resume section content is populated in US-056/US-057 (currently empty placeholder)
 
 ---
+
+## 2026-01-22 - US-054
+- What was implemented:
+  - Created js/systems/minimap.js with complete minimap visual design
+  - Canvas element already existed in HTML (150x150px), styled via CSS in ui.css
+  - Semi-transparent dark background (rgba(26, 26, 46, 0.85)) with border
+  - Garage outline drawn as rectangle using GARAGE.BOUNDARY_MIN/MAX constants
+  - Door opening indicator shown as lighter line at bottom (front wall)
+  - Stations drawn as colored dots using station accent colors from STATION_COLORS mapping
+  - Robot drawn as distinct white/cyan marker with direction indicator line
+  - worldToMinimap() function converts world coordinates to canvas coordinates
+  - Scale calculation: DRAW_SIZE / GARAGE.WIDTH for coordinate mapping
+  - initMinimap() initializes canvas context and performs initial draw
+  - updateMinimap(deltaTime) registered with game loop for per-frame updates
+- Files changed:
+  - js/systems/minimap.js (new file - complete minimap implementation)
+  - css/ui.css (added minimap styling)
+  - js/main.js (import initMinimap/updateMinimap, initialize and register with game loop)
+- **Learnings for future iterations:**
+  - Canvas Y is inverted from world Z - +Y is down (world +Z), -Y is up (world -Z)
+  - Robot direction indicator uses Math.sin/cos with robot.rotation.y
+  - Station colors stored in STATION_COLORS mapping keyed by station id from userData
+  - getStations() from station.js returns array of all registered stations (including non-work stations)
+  - ctx.clearRect() needed each frame before redrawing for clean animation
+  - Minimap drawn in layers: garage outline → stations → robot (back to front)
