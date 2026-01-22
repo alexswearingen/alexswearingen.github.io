@@ -1298,3 +1298,23 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - getStations() from station.js returns array of all registered stations (including non-work stations)
   - ctx.clearRect() needed each frame before redrawing for clean animation
   - Minimap drawn in layers: garage outline → stations → robot (back to front)
+
+---
+
+## 2026-01-22 - US-055
+- What was implemented:
+  - Verified minimap update logic was already fully implemented in US-054
+  - Scale calculation: SCALE = DRAW_SIZE / GARAGE.WIDTH converts garage coords (-20 to 20) to canvas pixels (10 to 140)
+  - updateMinimap(deltaTime) function registered with game loop via addUpdateCallback()
+  - drawMinimap() clears canvas and redraws: garage outline → stations → robot (layered back to front)
+  - Robot marker tracks position in real-time via robot.position reference
+  - Verified via Playwright: teleported robot to (-10, -10) and (10, 10), minimap marker updated correctly
+  - Performance measured at 0.003ms average per frame (well under 1ms budget)
+- Files changed:
+  - scripts/ralph/prd.json (marked US-055 as passes: true)
+- **Learnings for future iterations:**
+  - US-054 (visual design) included complete update logic - update stories may be redundant
+  - Canvas 2D drawing operations are very fast (~0.003ms for full redraw)
+  - worldToMinimap() function centralizes coordinate conversion
+  - Performance testing: use performance.now() in loop to measure average/max/min times
+  - Robot position is read directly each frame - no need for event-based updates
