@@ -8,6 +8,7 @@ import { startLoop } from './core/loop.js';
 import { createFloor, createWalls, createCeiling } from './entities/garage.js';
 import { createRobot, getRobotMeshes } from './entities/robot.js';
 import { ROBOT } from './core/constants.js';
+import { initControls } from './systems/controls.js';
 
 /**
  * Initialize the application
@@ -35,6 +36,9 @@ async function init() {
     // Add robot meshes to outline pass for cel-shading outline effect
     const robotMeshes = getRobotMeshes();
     outlinePass.selectedObjects = robotMeshes;
+
+    // Initialize controls system (registers keyboard listeners and update callback)
+    initControls();
 
     // Hide loading text, show start button
     const loadingText = document.getElementById('loading-text');
