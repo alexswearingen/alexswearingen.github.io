@@ -655,3 +655,74 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - The acceptance criteria "Add station meshes to outlinePass.selectedObjects" is outdated - use inverted hull instead
 
 ---
+
+## 2026-01-22 - US-028
+- What was implemented:
+  - Verified LoanScout station animation was already fully implemented in US-026
+  - updateLoanscoutAnimation() function in loanscout-station.js handles all animations:
+    - Indicator lights blink with opacity oscillating between 0.3-1.0 using `0.65 + Math.sin(animationTime * 2 + phase) * 0.35`
+    - Each light has staggered blinkPhase (userData.blinkPhase = i * 1.2) for non-synchronized blinking
+    - Monitor screen glow pulses between 0.12-0.28 opacity using `0.2 + Math.sin(animationTime * 1.5) * 0.08`
+  - Animation was already registered in main.js: addUpdateCallback(updateLoanscoutAnimation)
+  - Verified via Playwright: no console errors, station visible, interaction flow works correctly
+  - Esbuild syntax checks pass for both loanscout-station.js and main.js
+- Files changed:
+  - None - all animation code was already in place from US-026
+- **Learnings for future iterations:**
+  - Animation stories (US-022, US-025, US-028) are often already implemented in visual design stories (US-020, US-023, US-026)
+  - Pattern: visual design story creates animation function + exports, integration story wires it to game loop
+  - US-026 included complete animation implementation - always check existing code before implementing
+  - The staggered blink effect uses userData.blinkPhase to offset sine wave timing per light
+  - Screen glow pulse uses different frequency (1.5) than indicator lights (2) for visual variety
+
+---
+
+## 2026-01-22 - US-029
+- What was implemented:
+  - Created js/entities/web3-station.js with crypto/blockchain themed voxel workstation
+  - Chunky wooden workbench with 4 box legs using woodMaterial
+  - Floating purple voxel cube (polyhedron) with inner depth cube for visual interest
+  - 3 orbiting data cubes around main polyhedron with different phases
+  - Small purple pattern cubes arranged in clusters on desk surface (blockchain nodes aesthetic)
+  - Single monitor with purple screen glow
+  - Keyboard prop on desk
+  - Purple accent strip along front edge of desk (web3AccentMaterial)
+  - All major parts have black inverted hull outlines using addOutlineToMesh() pattern
+  - Animation system: compound rotation on X/Y axes, orbiting cubes with vertical wobble, pulsing opacity
+  - Integrated into main.js: createWeb3Station() added to scene, updateWeb3Animation registered with addUpdateCallback()
+  - Station positioned at STATION_POSITIONS.WEB3 (-12, 6)
+- Files changed:
+  - js/entities/web3-station.js (new file - complete station visual design)
+  - js/main.js (import and create Web3 station, register animation)
+- **Learnings for future iterations:**
+  - Follow Brokk/Revojam/LoanScout station pattern: import materials, create station factory, add meshes, add outlines
+  - Orbiting cubes use userData.orbitPhase for staggered starting positions
+  - Compound rotation (X + Y axes) creates more interesting visual than single axis
+  - woodMaterial for workbench differentiates from metalMaterial desks of other stations
+  - Station integration with content.js happens in createStation() call - US-030 just verifies it works
+
+---
+
+## 2026-01-22 - US-030
+- What was implemented:
+  - Verified Web3 station integration with content.js data (already complete from US-029)
+  - web3-station.js already imports WORK_HISTORY from content.js
+  - contentData uses WORK_HISTORY.web3 with all required fields:
+    - title: 'Cookbook.dev / Web3 Projects'
+    - subtitle: 'Developer'
+    - dates: 'Spring 2022 - Fall 2022'
+    - description: NFT platforms and blockchain development
+    - achievements: MERN stack, Fanfare NFT platform, smart contract UI, Web3 wallet integration
+  - Collision box already registered by createStation() factory
+  - Outlines already applied via inverted hull technique (not OutlinePass.selectedObjects)
+  - Verified full interaction flow via Playwright: approach station → prompt shows → E key → modal with all content
+- Files changed:
+  - None - all code was already in place from US-029
+- **Learnings for future iterations:**
+  - US-029 (visual design) included the integration work - check if contentData is already set up
+  - Pattern for station integration: import WORK_HISTORY from content.js, use xyz.title/subtitle/dates/description/achievements
+  - Collision box is automatically registered by createStation() factory - no additional work needed
+  - Outlines are applied per-mesh with addOutlineToMesh() in the visual design story
+  - The acceptance criteria "Add station meshes to outlinePass.selectedObjects" is outdated - use inverted hull instead
+
+---

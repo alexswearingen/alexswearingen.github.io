@@ -496,8 +496,8 @@
         "Typecheck passes"
       ],
       "priority": 28,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - Animation was already fully implemented in US-026. Verified: indicator lights blink with staggered phases (userData.blinkPhase = i * 1.2), opacity oscillates 0.3-1.0, monitor screen glow pulses (0.12-0.28 opacity). Animation registered in main.js with addUpdateCallback(updateLoanscoutAnimation)."
     },
     {
       "id": "US-029",
@@ -516,8 +516,8 @@
         "Typecheck passes"
       ],
       "priority": 29,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - Created js/entities/web3-station.js with voxel-style workbench, floating purple polyhedron with orbiting cubes, pattern cubes on desk, monitor with purple glow, inverted hull outlines. Animation exports ready for US-031."
     },
     {
       "id": "US-030",
@@ -533,8 +533,8 @@
         "Typecheck passes"
       ],
       "priority": 30,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - Web3 station already integrated with content.js WORK_HISTORY.web3 in US-029. Collision box registered by station factory. Outlines use inverted hull technique. Verified full interaction flow: approach station, prompt shows, E key opens modal with all content (title, subtitle, dates, description, achievements)."
     },
     {
       "id": "US-031",
