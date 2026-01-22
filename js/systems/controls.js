@@ -169,7 +169,26 @@ export function isEscapeKeyPressed() {
 }
 
 /**
- * Update robot position based on movement input
+ * Lerp angle with wrapping for smooth rotation
+ * Handles the shortest path between angles (e.g., -PI to PI wrap)
+ * @param {number} current - Current angle in radians
+ * @param {number} target - Target angle in radians
+ * @param {number} factor - Lerp factor (0-1)
+ * @returns {number} Interpolated angle
+ */
+function lerpAngle(current, target, factor) {
+    // Calculate the difference
+    let diff = target - current;
+
+    // Normalize to [-PI, PI] for shortest path
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+
+    return current + diff * factor;
+}
+
+/**
+ * Update robot position and rotation based on movement input
  * Called every frame by the game loop
  * @param {number} deltaTime - Time since last frame in seconds
  */
@@ -178,7 +197,7 @@ function updateMovement(deltaTime) {
 
     const movement = getMovementVector();
 
-    // Only move if there's input
+    // Only move and rotate if there's input
     if (movement.x !== 0 || movement.z !== 0) {
         // Calculate movement amount using speed constant and deltaTime
         const speed = ROBOT.MOVEMENT_SPEED;
@@ -187,6 +206,14 @@ function updateMovement(deltaTime) {
         // Update robot position
         robot.position.x += movement.x * moveAmount;
         robot.position.z += movement.z * moveAmount;
+
+        // Calculate target rotation angle from movement direction
+        // Math.atan2(x, z) gives angle from +Z axis toward +X axis
+        // This matches Three.js rotation.y where 0 = facing +Z, PI/2 = facing +X
+        const targetRotation = Math.atan2(movement.x, movement.z);
+
+        // Smoothly lerp toward target rotation
+        robot.rotation.y = lerpAngle(robot.rotation.y, targetRotation, ROBOT.ROTATION_LERP);
     }
 }
 
