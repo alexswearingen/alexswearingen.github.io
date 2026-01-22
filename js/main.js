@@ -3,10 +3,10 @@
  * Initializes all modules and starts the game loop
  */
 
-import { initEngine, scene, outlinePass } from './core/engine.js';
+import { initEngine, scene } from './core/engine.js';
 import { startLoop } from './core/loop.js';
 import { createFloor, createWalls, createCeiling } from './entities/garage.js';
-import { createRobot, getRobotMeshes } from './entities/robot.js';
+import { createRobot } from './entities/robot.js';
 import { ROBOT } from './core/constants.js';
 import { initControls } from './systems/controls.js';
 
@@ -23,6 +23,7 @@ async function init() {
     createCeiling(scene);
 
     // Create and position the robot
+    // Note: Robot includes inverted hull outlines for cel-shading effect
     const robotGroup = createRobot();
     // Position robot at center of garage, toward front
     // Robot's internal geometry already has feet at Y=0, so group Y stays at 0
@@ -32,10 +33,6 @@ async function init() {
         ROBOT.START_POSITION.z
     );
     scene.add(robotGroup);
-
-    // Add robot meshes to outline pass for cel-shading outline effect
-    const robotMeshes = getRobotMeshes();
-    outlinePass.selectedObjects = robotMeshes;
 
     // Initialize controls system (registers keyboard listeners and update callback)
     initControls();
@@ -108,8 +105,6 @@ function showResume() {
     if (resumeSection) {
         resumeSection.classList.remove('hidden');
     }
-
-    console.log('Showing resume view');
 }
 
 // Initialize when DOM is ready

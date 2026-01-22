@@ -6,16 +6,17 @@
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
-import { CAMERA, COLORS, LIGHTING, OUTLINE, GARAGE } from './constants.js';
+import { CAMERA, COLORS, LIGHTING, GARAGE } from './constants.js';
 
 // Module-level exports (will be initialized by initEngine)
 export let scene = null;
 export let camera = null;
 export let renderer = null;
 export let composer = null;
-export let outlinePass = null;
 
 /**
  * Initialize the Three.js engine
@@ -82,8 +83,7 @@ export function initEngine() {
         scene,
         camera,
         renderer,
-        composer,
-        outlinePass
+        composer
     };
 }
 
@@ -134,7 +134,9 @@ function setupLighting() {
 
 /**
  * Set up post-processing pipeline
- * EffectComposer with RenderPass and OutlinePass for cel-shading outlines
+ * EffectComposer with RenderPass, OutputPass, and FXAA
+ * Note: Cel-shading outlines are achieved via inverted hull technique in robot.js,
+ * not via OutlinePass (which had compatibility issues)
  */
 function setupPostProcessing() {
     // Create effect composer
@@ -144,19 +146,16 @@ function setupPostProcessing() {
     const renderPass = new RenderPass(scene, camera);
     composer.addPass(renderPass);
 
-    // Create outline pass for cel-shading effect
-    const resolution = new THREE.Vector2(window.innerWidth, window.innerHeight);
-    outlinePass = new OutlinePass(resolution, scene, camera);
+    // Add OutputPass for proper color space handling in Three.js r160+
+    const outputPass = new OutputPass();
+    composer.addPass(outputPass);
 
-    // Configure outline pass (2-3px black outlines)
-    outlinePass.edgeStrength = OUTLINE.EDGE_STRENGTH;
-    outlinePass.edgeGlow = OUTLINE.EDGE_GLOW;
-    outlinePass.edgeThickness = OUTLINE.EDGE_THICKNESS;
-    outlinePass.pulsePeriod = OUTLINE.PULSE_PERIOD;
-    outlinePass.visibleEdgeColor.set(OUTLINE.VISIBLE_EDGE_COLOR);
-    outlinePass.hiddenEdgeColor.set(OUTLINE.HIDDEN_EDGE_COLOR);
-
-    composer.addPass(outlinePass);
+    // Add FXAA for anti-aliasing of post-processed result
+    const fxaaPass = new ShaderPass(FXAAShader);
+    const pixelRatio = renderer.getPixelRatio();
+    fxaaPass.material.uniforms['resolution'].value.x = 1 / (window.innerWidth * pixelRatio);
+    fxaaPass.material.uniforms['resolution'].value.y = 1 / (window.innerHeight * pixelRatio);
+    composer.addPass(fxaaPass);
 }
 
 /**
@@ -169,7 +168,4 @@ function onWindowResize() {
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     composer.setSize(window.innerWidth, window.innerHeight);
-
-    // Update outline pass resolution
-    outlinePass.resolution.set(window.innerWidth, window.innerHeight);
 }

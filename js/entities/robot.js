@@ -8,8 +8,44 @@ import * as THREE from 'three';
 import { ROBOT, COLORS } from '../core/constants.js';
 import { robotPrimaryMaterial, robotSecondaryMaterial } from '../core/materials.js';
 
+// Outline scale factor - how much larger the outline mesh is
+// Larger scale = thicker outlines (1.03 = 3% = thin line, 1.08 = 8% = medium line)
+const OUTLINE_SCALE = 1.05;  // 5% larger for nice cel-shaded outlines
+
 // Module-level robot reference
 export let robot = null;
+
+/**
+ * Helper function to add an outline mesh to a mesh
+ * Uses the inverted hull technique (backface rendering, slightly scaled up)
+ * @param {THREE.Mesh} mesh - The mesh to add an outline to
+ * @param {THREE.Group} group - The group to add the outline mesh to
+ * @param {number} scale - Scale factor for the outline (default OUTLINE_SCALE)
+ */
+// Shared outline material - black backface-only for inverted hull technique
+const outlineMaterial = new THREE.MeshBasicMaterial({
+    color: 0x000000,  // Black outlines
+    side: THREE.BackSide
+});
+
+/**
+ * Helper function to add an outline mesh to a mesh
+ * Uses the inverted hull technique (backface rendering, slightly scaled up)
+ * @param {THREE.Mesh} mesh - The mesh to add an outline to
+ * @param {THREE.Group} group - The group to add the outline mesh to
+ * @param {number} scale - Scale factor for the outline (default OUTLINE_SCALE)
+ */
+function addOutlineToMesh(mesh, group, scale = OUTLINE_SCALE) {
+    const outlineMesh = new THREE.Mesh(mesh.geometry, outlineMaterial);
+    outlineMesh.position.copy(mesh.position);
+    outlineMesh.rotation.copy(mesh.rotation);
+    outlineMesh.scale.set(scale, scale, scale);
+    outlineMesh.name = mesh.name + '_outline';
+    // Outlines don't need shadows
+    outlineMesh.castShadow = false;
+    outlineMesh.receiveShadow = false;
+    group.add(outlineMesh);
+}
 
 /**
  * Creates the robot character mesh group
@@ -43,6 +79,7 @@ export function createRobot() {
     // Position torso so bottom is at Y=0 relative to leg position
     torso.position.y = LIMB_LENGTH + BODY_HEIGHT / 2;
     group.add(torso);
+    addOutlineToMesh(torso, group);
 
     // === HEAD (Sphere) ===
     // Using 8 width segments, 6 height segments for low-poly look
@@ -54,6 +91,7 @@ export function createRobot() {
     // Position head on top of torso
     head.position.y = LIMB_LENGTH + BODY_HEIGHT + HEAD_RADIUS * 0.8;
     group.add(head);
+    addOutlineToMesh(head, group);
 
     // === EYES (Small spheres - adds character) ===
     const eyeGeometry = new THREE.SphereGeometry(HEAD_RADIUS * 0.2, 6, 4);
@@ -84,6 +122,7 @@ export function createRobot() {
     leftArm.castShadow = true;
     leftArm.receiveShadow = true;
     group.add(leftArm);
+    addOutlineToMesh(leftArm, group);
 
     const rightArm = new THREE.Mesh(armGeometry, robotSecondaryMaterial);
     rightArm.name = 'rightArm';
@@ -91,6 +130,7 @@ export function createRobot() {
     rightArm.castShadow = true;
     rightArm.receiveShadow = true;
     group.add(rightArm);
+    addOutlineToMesh(rightArm, group);
 
     // === LEGS (Cylinders) ===
     const legGeometry = new THREE.CylinderGeometry(LIMB_RADIUS, LIMB_RADIUS, LIMB_LENGTH, 8);
@@ -103,6 +143,7 @@ export function createRobot() {
     leftLeg.castShadow = true;
     leftLeg.receiveShadow = true;
     group.add(leftLeg);
+    addOutlineToMesh(leftLeg, group);
 
     const rightLeg = new THREE.Mesh(legGeometry, robotSecondaryMaterial);
     rightLeg.name = 'rightLeg';
@@ -110,6 +151,7 @@ export function createRobot() {
     rightLeg.castShadow = true;
     rightLeg.receiveShadow = true;
     group.add(rightLeg);
+    addOutlineToMesh(rightLeg, group);
 
     // === FEET (Small boxes for stability/character) ===
     const footGeometry = new THREE.BoxGeometry(LIMB_RADIUS * 2.5, LIMB_RADIUS, LIMB_RADIUS * 3);
@@ -120,6 +162,7 @@ export function createRobot() {
     leftFoot.castShadow = true;
     leftFoot.receiveShadow = true;
     group.add(leftFoot);
+    addOutlineToMesh(leftFoot, group);
 
     const rightFoot = new THREE.Mesh(footGeometry, robotSecondaryMaterial);
     rightFoot.name = 'rightFoot';
@@ -127,6 +170,7 @@ export function createRobot() {
     rightFoot.castShadow = true;
     rightFoot.receiveShadow = true;
     group.add(rightFoot);
+    addOutlineToMesh(rightFoot, group);
 
     // === ANTENNA (Small cylinder on head for extra charm) ===
     const antennaGeometry = new THREE.CylinderGeometry(0.03, 0.03, 0.25, 6);

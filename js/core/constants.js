@@ -77,14 +77,11 @@ export const LIGHTING = {
     SHADOW_MAP_SIZE: 2048
 };
 
-// Outline Effect
+// Outline Effect (for inverted hull technique)
+// These values are not used by OutlinePass anymore, but kept for reference
 export const OUTLINE = {
-    EDGE_STRENGTH: 3,
-    EDGE_GLOW: 0,
-    EDGE_THICKNESS: 1,
-    PULSE_PERIOD: 0,
-    VISIBLE_EDGE_COLOR: 0x000000,
-    HIDDEN_EDGE_COLOR: 0x000000
+    SCALE: 1.05,  // How much larger the outline mesh is (5% = nice thin outline)
+    COLOR: 0x000000  // Black outlines
 };
 
 // Performance Targets
