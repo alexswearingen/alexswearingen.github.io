@@ -1094,3 +1094,30 @@ Started: Thu Jan 22 00:07:17 CST 2026
   - Take multiple screenshots with delay to verify animation is actually running
 
 ---
+
+## 2026-01-22 - US-047
+- What was implemented:
+  - Created js/entities/toolbox.js with voxel-style rolling toolbox prop
+  - Rolling toolbox positioned at (14, 0, 8) in the garage
+  - Main body: chunky tall red box (0.9 x 1.6 x 0.6 units) with redMaterial
+  - Top lid: separate red box section at top
+  - 4 drawer lines: thin darker red boxes across front for visual separation
+  - 4 drawer handles: small silver rectangles centered on each drawer section
+  - Top handle: dark gray box on top for pushing the toolbox
+  - 4 box wheels: small dark gray boxes at corners (NOT cylinders, voxel style)
+  - Silver side accent strips on left and right sides
+  - Collision box registered with registerCollisionBox() for robot collision
+  - All major parts have black inverted hull outlines using addOutlineToMesh()
+  - Integrated into main.js: import createToolbox, call createToolbox(scene)
+- Files changed:
+  - js/entities/toolbox.js (new file - complete toolbox visual design)
+  - js/main.js (import and create toolbox)
+- **Learnings for future iterations:**
+  - Follow golf-bag.js pattern for standalone props: materials, outline helper, createXxx function, export reference
+  - Drawer lines positioned with for loop using drawerSpacing = bodyHeight / numSections
+  - Drawer handles positioned in center of each drawer section: (i - 0.5) * drawerSpacing
+  - Box wheels at corners calculated with wheelOffset from body edges
+  - Collision box registered in the createXxx function itself (not in main.js)
+  - Prop positions: (14, 0, 8) places toolbox in front-right area near golf bag (16, 0, 10)
+
+---
