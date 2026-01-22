@@ -10,7 +10,7 @@ import { createRobot, robot } from './entities/robot.js';
 import { ROBOT } from './core/constants.js';
 import { initControls, isInteractKeyPressed } from './systems/controls.js';
 import { checkStationProximity, createStation } from './entities/station.js';
-import { showInteractionPrompt, hideInteractionPrompt } from './systems/ui.js';
+import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen } from './systems/ui.js';
 
 // Track the currently nearby station for interaction
 let nearbyStation = null;
@@ -30,6 +30,9 @@ function initInteraction() {
 function updateInteraction(deltaTime) {
     if (!robot) return;
 
+    // Don't check proximity while modal is open
+    if (isModalOpen) return;
+
     // Check if robot is near any station
     const station = checkStationProximity({ x: robot.position.x, z: robot.position.z });
 
@@ -40,9 +43,12 @@ function updateInteraction(deltaTime) {
     if (station) {
         showInteractionPrompt();
 
-        // Check if E key was pressed to interact (handled in future US-019)
+        // Check if E key was pressed to interact - show modal with station content
         if (isInteractKeyPressed()) {
-            // Will trigger modal in US-019
+            const contentData = station.userData.contentData;
+            if (contentData) {
+                showModal(contentData);
+            }
         }
     } else {
         hideInteractionPrompt();
@@ -53,6 +59,9 @@ function updateInteraction(deltaTime) {
  * Initialize the application
  */
 async function init() {
+    // Initialize UI event listeners (modal close button, overlay click, escape key)
+    initUI();
+
     // Initialize the Three.js engine
     initEngine();
 

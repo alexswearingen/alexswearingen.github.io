@@ -8,6 +8,7 @@ import { robot } from '../entities/robot.js';
 import { camera } from '../core/engine.js';
 import { addUpdateCallback } from '../core/loop.js';
 import { checkBoundaries, checkObjectCollisions } from './collision.js';
+import { isModalOpen } from './ui.js';
 
 // Track which keys are currently pressed
 const keysPressed = {
@@ -199,6 +200,9 @@ function lerpAngle(current, target, factor) {
  */
 function updateMovement(deltaTime) {
     if (!robot) return;
+
+    // Don't allow movement while modal is open
+    if (isModalOpen) return;
 
     const movement = getMovementVector();
 
