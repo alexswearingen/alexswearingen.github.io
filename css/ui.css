@@ -171,3 +171,60 @@
     z-index: 100;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
+
+/* Audio Toggle Button */
+#audio-toggle {
+    position: fixed;
+    bottom: 180px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    background-color: rgba(26, 26, 46, 0.85);
+    border: 2px solid rgba(64, 64, 96, 0.8);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 1.25rem;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#audio-toggle:hover {
+    background-color: rgba(40, 40, 60, 0.9);
+    border-color: #6c5ce7;
+}
+
+#audio-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Icon states - show/hide based on muted class */
+#audio-toggle .audio-icon-on {
+    display: inline;
+}
+
+#audio-toggle .audio-icon-off {
+    display: none;
+}
+
+#audio-toggle.audio-muted .audio-icon-on {
+    display: none;
+}
+
+#audio-toggle.audio-muted .audio-icon-off {
+    display: inline;
+}
+
+/* Subtle indicator when audio is active */
+#audio-toggle:not(.audio-muted) {
+    border-color: #00b894;
+}
+
+/* Hide audio toggle when canvas is hidden (resume view) */
+#audio-toggle.hidden {
+    display: none;
+}

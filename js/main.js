@@ -32,6 +32,7 @@ import { createAppliances } from './entities/appliances.js';
 import { createWallDecorations } from './entities/wall-clock.js';
 import { createCardboardBoxes } from './entities/cardboard-boxes.js';
 import { createHobbyFurniture } from './entities/hobby-furniture.js';
+import { updateRobotAnimation } from './systems/animation.js';
 import { initUI, showInteractionPrompt, hideInteractionPrompt, showModal, isModalOpen, hideAudioToggle, showAudioToggle } from './systems/ui.js';
 import { isDevMode, initDebugControls, setCamera, getFloorPlan } from './systems/debug.js';
 import { initMinimap, updateMinimap } from './systems/minimap.js';
@@ -204,6 +205,9 @@ async function init() {
 
     // Register dust particles animation with game loop
     addUpdateCallback(updateDustParticles);
+
+    // Register robot animation with game loop (US-064)
+    addUpdateCallback(updateRobotAnimation);
 
     // Initialize debug controls (keyboard shortcuts for camera views)
     initDebugControls();

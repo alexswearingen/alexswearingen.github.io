@@ -1,0 +1,1 @@
+{"label": "with-mcp", "run": 1, "duration_ms": 84003, "duration_api_ms": 89113, "cost_usd": 0.23353305000000002, "num_turns": 2, "input_tokens": 7660, "output_tokens": 7699, "cache_read_tokens": 666002, "cache_create_tokens": 47617}

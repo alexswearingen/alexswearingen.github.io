@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "brokk": {
+      "command": "brokk",
+      "args": ["mcp"],
+      "cwd": "/Users/alexswearingen/alexswearingen.github.io/scripts"
+    }
+  }
+}
