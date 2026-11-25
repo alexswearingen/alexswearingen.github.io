@@ -26,7 +26,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { background: var(--sky); color: var(--ink); -webkit-text-size-adjust: 100%; }
+html { background: var(--sky-top); color: var(--ink); -webkit-text-size-adjust: 100%; }   /* the canvas is the sky's top: a phone's browser takes its own bars' colour from here */
 body { margin: 0; font: 400 var(--fs, 14px)/1.4 var(--sans); }
 body::after {                       /* the sheet's grain, over ink and paper alike */
   content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none;
@@ -40,6 +40,7 @@ a { color: inherit; text-underline-offset: .18em; text-decoration-thickness: 1px
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 button { font: inherit; color: inherit; }
 .nb { white-space: nowrap; }
+.tint { display: none; }
 .redact { position: relative; display: inline-block; width: 5.6em; height: .84em; vertical-align: -.09em; background: currentColor; overflow: hidden; }   /* a name that may not be printed yet */
 .redact span { position: absolute; clip-path: inset(50%); }
 
@@ -48,7 +49,8 @@ button { font: inherit; color: inherit; }
   position: relative; display: grid; height: 100svh; overflow: clip;
   background: linear-gradient(var(--sky-top), var(--sky) 45%, var(--sky-foot));
 }
-.box::after { content: ""; background: var(--paper); z-index: 2; }   /* the manual's paper */
+.box::after { content: ""; background: var(--paper); z-index: 2; box-shadow: var(--edge), var(--cast); }   /* the manual's paper: an ink edge and a soft shadow on the side the sky is */
+.box { --edge: -2px 0 0 var(--ink); --cast: -14px 0 26px -10px rgb(12 34 56 / .34); }
 .id, .manual { position: relative; z-index: 3; }
 /* the sky's clouds: a bank along the foot of the box, and one or two behind the machine */
 .box::before, .stage::before, .pc::before, .pc::after { position: absolute; z-index: 1; background: 0 0 / 100% 100% no-repeat; pointer-events: none; }
@@ -87,7 +89,7 @@ h1 { font: 400 calc(var(--h1, 40px) * 1.34)/.88 var(--display); letter-spacing: 
 .pc.has-focus .ring { display: block; }
 
 /* the tube's picture fills the glass: one screen, a status line across its foot, and the tube's own marks over both */
-.view { --bar-h: calc(var(--glass-h) * .092); position: absolute; inset: 0; background: var(--tube); color: var(--lit); font-family: var(--sans); overflow: hidden; }
+.view { --bar-h: calc(var(--glass-h) * .092); touch-action: pan-y; position: absolute; inset: 0; background: var(--tube); color: var(--lit); font-family: var(--sans); overflow: hidden; }
 .view::after { content: ""; position: absolute; inset: 0; z-index: 6; background: #fff; opacity: 0; pointer-events: none; }   /* the flash as the picture folds and opens */
 .screens { display: none; position: absolute; inset: 0; }
 .no-js .screens[data-for="start"] { display: block; }
@@ -122,6 +124,12 @@ h1 { font: 400 calc(var(--h1, 40px) * 1.34)/.88 var(--display); letter-spacing: 
 .pager button:active svg { fill: var(--tube); }
 .pager button:focus-visible { outline: 2px solid var(--lit); outline-offset: 1px; }
 .pager svg { width: 6px; height: 8px; fill: var(--lit); }
+/* where the screens go by on their own (site.js: a phone, or any screen that is touched): no buttons to aim at, and a
+   hairline over the status line that fills while a screen is up. A touch on the picture still steps it. */
+.view.is-auto .pager button { display: none; }
+.view.is-auto .bar::before { content: ""; position: absolute; left: 8%; right: 8%; top: -1px; height: 1px; background: rgb(243 241 234 / .7); transform: scaleX(0); transform-origin: 0 50%; }
+.view.is-auto.is-dwell .bar::before { animation: dwell var(--dwell, 4500ms) linear both; }
+@keyframes dwell { to { transform: scaleX(1); } }
 /* scan lines, the fall-off toward the tube's corners, and a slow band of the refresh */
 .crt {
   position: absolute; inset: 0; z-index: 5; pointer-events: none; overflow: hidden;
@@ -323,6 +331,7 @@ h1 { font: 400 calc(var(--h1, 40px) * 1.34)/.88 var(--display); letter-spacing: 
 .back:hover span { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 2px; }
 .back:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 .no-js .back { display: none; }
+.back.is-none { visibility: hidden; }   /* the start panel: the link's room, so its title stands where the others' do */
 /* One page design for every chapter: its title, then lists of rows (the last section of this file). */
 h2 { font: 400 calc(var(--h2, 38px) * 1.3)/.9 var(--display); letter-spacing: .004em; text-transform: uppercase; text-wrap: balance; margin-left: calc(var(--lsb, .03) * -1em); }
 h2.two span { display: inline-block; }
@@ -390,35 +399,68 @@ h2.two span + span { margin-left: calc((var(--lsb2) - var(--lsb)) * -1em); }   /
   .links { margin-top: .75em; }
 }
 
-/* ================================================================== phone: title, machine, disks, guide */
+/* ================================================================== phone: a page that scrolls
+   The title, the machine, the rack of disks, and the guide under them. The first screen ends with the guide's title
+   showing; the page scrolls from there. Where the screen is tall enough the machine stays at the top while the guide
+   is read, and the rack and then the guide go under it. Nothing here is sized by the window's height but the rack
+   (from the smallest height the browser's bars leave, so it does not move as they come and go). */
 @media (max-width: 735.98px), (max-height: 547.98px) {
-  .box { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto 1fr; justify-items: center; min-height: 600px; }
-  .box::after { grid-column: 1; grid-row: 3; justify-self: stretch; }
-  .id, .stage, .manual { grid-column: 1; }
-  .stage { position: relative; }
-  .stage::before { content: ""; left: 50%; bottom: 0; margin-left: calc(var(--bank-p-w) / -2); width: var(--bank-p-w); height: var(--bank-p-h); background-image: var(--bank-p); }
-  .id { grid-row: 1; justify-self: stretch; padding: var(--p-top, 12px) var(--m-side) 0; display: grid; grid-template-columns: auto auto auto 1fr auto; gap: 0 16px; align-items: center; }
-  .stage { grid-row: 2; display: flex; flex-direction: column; align-items: center; margin-top: var(--p-gap, 8px); }
-  .manual { grid-row: 3; justify-self: stretch; }
+  .box {
+    display: flex; flex-direction: column; align-items: center; height: auto; min-height: 100lvh; overflow: visible; overflow-x: clip;
+    background: var(--sky);
+    --edge: 0 -2px 0 var(--ink); --cast: 0 -12px 24px -10px rgb(12 34 56 / .34);
+    --rg: 10px;                      /* the room between whole disks */
+    --pin: 8px;                      /* where the machine stays, from the top of the screen */
+    --peek: 4.6em;                   /* what of the guide the first screen shows: its edge and its title */
+    --whole: calc(2 * var(--disk-h) + 3 * var(--rg));
+    /* the rack has what the first screen leaves it (site.js measures the title, --head): at the least two rows of
+       label heads, at the most two rows of whole disks */
+    --rack: clamp(calc(var(--v1) + var(--v2)), calc(100svh - var(--head, 126px) - var(--p-gap, 8px) - var(--pc-h) - var(--peek)), var(--whole));
+  }
+  .box::after { content: none; }     /* the paper is the guide's own here */
+  .stage { display: contents; }
+  .id {
+    z-index: 15; align-self: stretch; padding: var(--p-top, 12px) var(--m-side) 0;
+    display: grid; grid-template-columns: auto auto auto 1fr auto; gap: 0 16px; align-items: center;
+  }
   h1 { grid-column: 1 / span 4; white-space: nowrap; }
   .line { grid-column: 1 / -1; grid-row: 2; margin-top: .4em; text-wrap: balance; }
   .links { display: contents; }
   .links a { grid-row: 3; min-height: var(--link-h, 36px); }
   .links a.primary { grid-row: 1; grid-column: 5; min-height: 36px; }
-  .chapter { --m-top: var(--p-chap, .75em); padding-bottom: 9px; }
-  .bar { padding-left: 7%; padding-right: 6%; gap: 5px; font-size: 9.5px; }
-  .pager { gap: 4px; }
-  .folio { position: absolute; right: var(--m-side); top: calc(var(--m-top) + var(--h2) * 1.3 * .423 - 12px); height: 24px; padding: 0; gap: .45em; }   /* centred on the title's capitals */
-  .folio button { width: 30px; height: 24px; }
-  .chapter.is-paged h2 { max-width: calc(100% - 110px); }
-  /* a chapter with the way back above its title: the page-turn buttons sit on that line, and the title has the full width */
-  .chapter:has(.back) .folio { top: calc(var(--m-top) + .92em * .8 - 12px); }
-  .chapter.is-paged:has(.back) h2 { max-width: none; }
+  /* the machine, and the sky it carries: a sheet of sky as wide as the screen, from far above it down to its foot.
+     Whatever scrolls up goes under that sheet. Over the title the sheet is the sky's top, the colour of the canvas. */
+  .pc { order: 1; z-index: 13; margin-top: var(--p-gap, 8px); }
+  .pc::before {
+    content: ""; left: 50%; bottom: 0; z-index: 0; width: 100vw; height: calc(var(--pc-h) + 100lvh); margin-left: -50vw;
+    background: linear-gradient(to bottom, var(--sky-top) calc(100% - var(--pc-h) - var(--pin)), var(--sky));
+  }
+  /* once something has gone under the sheet it has an edge: the guide's own ink line, and a shadow on what is below */
+  .pc::after {
+    content: ""; left: 50%; bottom: -2px; z-index: 0; width: 100vw; height: 2px; margin-left: -50vw;
+    background: var(--ink); box-shadow: 0 12px 20px -9px rgb(12 34 56 / .4); opacity: 0;
+  }
+  .box.is-under .pc::after { opacity: 1; }
+  .manual { order: 3; z-index: 12; align-self: stretch; flex: 1 0 auto; container-type: normal; box-shadow: var(--edge), var(--cast); }
+  .chapter { --m-top: var(--p-chap, .75em); height: auto; padding-bottom: calc(2.4em + env(safe-area-inset-bottom, 0px)); }
+  .body { flex: none; overflow: visible; }
+  .folio { display: none; }          /* nothing is paged: the chapter is as long as it is */
   .back { margin-bottom: .25em; }
-  /* the second row runs under the manual's page */
-  .disk:not(.is-flying) { clip-path: inset(-40px -40px calc(var(--disk-h) - var(--v2) - (1 - var(--row)) * 400px) -40px); }
+  .bar { padding-left: 7%; padding-right: 6%; gap: 5px; font-size: 9.5px; }
+  .view.is-auto .bar::before { left: 7%; right: 6%; }
+  .pager { gap: 4px; }
 }
-
+@media (max-width: 735.98px) and (prefers-reduced-motion: no-preference) {
+  .pc::after { transition: opacity 160ms linear; }
+}
+/* a screen tall enough to read under the machine: it stays. (A phone on its side scrolls the machine away.) */
+@media (max-width: 735.98px) and (min-height: 520px) {
+  .pc { position: sticky; top: var(--pin); }
+  /* a phone's browser colours its own bars from what is fixed along the screen's edges: sky above, paper below */
+  .tint { display: block; position: fixed; left: 0; right: 0; z-index: 14; height: 4px; pointer-events: none; }
+  .tint-top { top: 0; background-color: var(--sky-top); }
+  .tint-foot { bottom: 0; background-color: var(--paper); }
+}
 /* middle and phone: six disks in two rows of three, tucked under the machine's foot, each row lying on the one before */
 @media (max-width: 1159.98px), (max-height: 659.98px) {
   .pc { order: 1; }
@@ -429,6 +471,24 @@ h2.two span + span { margin-left: calc((var(--lsb2) - var(--lsb)) * -1em); }   /
   }
   .disk:focus-visible .disk-body { outline-offset: -3px; }
   .label { --band: 3px; --label-top: .2em; }
+}
+
+/* phone: the rack. With room the disks lie whole, a little clear of the machine and of each other; with less the second
+   row goes under the guide's paper, then the rows close up, then the first row goes under the machine's foot (where it
+   lies at the least: each disk's label still shows its name). A bank of cloud stands behind them, its foot behind the paper. */
+@media (max-width: 735.98px), (max-height: 547.98px) {
+  .disks { height: var(--rack); }
+  .disks::before {
+    content: ""; position: absolute; z-index: 1; left: 50%; top: var(--rg); width: var(--bank-p-w); height: var(--bank-p-h); margin-left: calc(var(--bank-p-w) / -2);
+    background: var(--bank-p) 0 0 / 100% 100% no-repeat; pointer-events: none;
+  }
+  .disk {
+    --y1: clamp(var(--v1), calc(var(--rack) - var(--disk-h) - var(--rg)), calc(var(--disk-h) + 2 * var(--rg)));
+    --y0: clamp(calc(-1 * var(--hide)), calc(var(--rack) - 2 * var(--disk-h) - 2 * var(--rg)), var(--rg));
+    --y: calc((1 - var(--row)) * var(--y0) + var(--row) * var(--y1));
+  }
+  /* what of a disk lies past the rack's end is under the guide's paper */
+  .disk:not(.is-flying) { clip-path: inset(-40px -40px max(-40px, calc(var(--y) + var(--disk-h) - var(--rack))) -40px); }
 }
 
 /* in the rack only the head of a label shows: a two-line name leaves no room for its years, so they are not half-shown */
@@ -472,14 +532,8 @@ h2.two span + span { margin-left: calc((var(--lsb2) - var(--lsb)) * -1em); }   /
 @media (min-width: 736px) and (min-height: 548px) {
   @container (max-height: 499.98px) { .rows .aside { display: none; } }
 }
-/* phone: the disks are the start panel's second list, and a short page has no room for asides */
+/* phone: the disks are the start panel's second list */
 @media (max-width: 735.98px), (max-height: 547.98px) {
-  .jobs, .rows .aside { display: none; }
+  .jobs { display: none; }
   .body > .rows:first-child { margin-top: .5em; margin-top: round(.5em, 1px); }
-  /* the shortest pages (about 100 px of paper): the rows close up before any of them is turned to a second page */
-  @container (max-height: 139.98px) {
-    .body > .rows:first-child { margin-top: .25em; margin-top: round(.25em, 1px); }
-    .rows { padding: .15em 0; padding: round(.15em, 1px) 0; }
-    .rows .row { padding: .22em 0; padding: round(.22em, 1px) 0; }
-  }
 }

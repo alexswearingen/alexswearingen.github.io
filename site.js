@@ -13,7 +13,8 @@
   const byId = Object.fromEntries(disks.map(d => [d.id, d]));
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   const wide = matchMedia("(min-width: 1160px) and (min-height: 660px)");     // disks beside the machine, whole
-  const phone = matchMedia("(max-width: 735.98px), (max-height: 547.98px)");  // the second row runs under the manual's page
+  const phone = matchMedia("(max-width: 735.98px), (max-height: 547.98px)");  // the page scrolls: the rack and the guide lie under the machine
+  const touch = matchMedia("(hover: none)");                                  // a screen that is touched: no pointer to aim with
   // ms. A pick: the old disk pops out and goes back while the new one lifts, crosses and is pushed in; then the tube lights.
   const T = { off: 150, pop: 130, back: 330, lift: 120, cross: 270, push: 190, on: 300 };
   const TILT = 78;                           // degrees: how far back the disk lies as it meets the slot
@@ -99,8 +100,30 @@
     view.classList.toggle("is-bare", screens[i].classList.contains("face"));   // the figure has the whole glass: no status line under it
     pager.hidden = screens.length < 2;
     count.textContent = `${i + 1}/${screens.length}`;
+    const roll = screens.length > 1 && id !== disks[0].id && (phone.matches || touch.matches) && !still.matches;
+    view.classList.toggle("is-auto", roll);
+    count.setAttribute("aria-live", roll ? "off" : "polite");    // a count that changes by itself is not read out each time
     face.sync();
     clips.sync();
+    dwell(roll ? screens[i] : null);
+  }
+  /* On a phone, and on any screen that is touched, a disk's screens go by on their own: a still for a few seconds, a
+     clip for its length, and round again. (The buttons are too small to aim a finger at; a touch on the picture, or a
+     finger drawn across it, still steps it.) Not for a reader who asked for less motion: the buttons stay. */
+  let dwelling = 0;
+  function dwell(s) {
+    clearTimeout(dwelling);
+    view.classList.remove("is-dwell");
+    if (!s) return;
+    const v = $("video", s), len = v && v.duration * 1000;
+    const ms = len && isFinite(len) ? Math.min(14000, Math.max(4500, len)) : v ? 8000 : 4500;
+    view.style.setProperty("--dwell", `${ms}ms`);
+    void view.offsetWidth;
+    view.classList.add("is-dwell");
+    dwelling = setTimeout(() => {
+      const lit = !tube.classList.contains("is-blank") && !tube.classList.contains("is-off") && !document.hidden;
+      if (lit) step(1); else dwell(s);       // dark, or not looked at: it waits
+    }, ms);
   }
   function step(by) {
     const id = root.dataset.disk;
@@ -109,7 +132,13 @@
   }
   $(".prev").addEventListener("click", () => step(-1));
   $(".next").addEventListener("click", () => step(1));
-  view.addEventListener("click", e => { if (e.target.closest(".shot, .face")) step(1); });
+  let sx = 0, sy = 0, swiped = 0;             // a finger drawn across the picture steps it, either way
+  view.addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  view.addEventListener("touchend", e => {
+    const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Math.abs(dx) > 28 && Math.abs(dx) > Math.abs(dy) * 1.4) { swiped = performance.now(); step(dx < 0 ? 1 : -1); }
+  }, { passive: true });
+  view.addEventListener("click", e => { if (performance.now() - swiped > 500 && e.target.closest(".shot, .face")) step(1); });
   tube.addEventListener("animationend", e => {
     if (e.target === view) tube.classList.remove("is-on");
     else if (e.target.classList.contains("is-in")) settle();
@@ -154,13 +183,23 @@
     for (const b of c.boxes) b.hidden = ![...b.children].some(k => !k.hidden);
   }
   const over = c => c.body.scrollHeight > c.body.clientHeight + 1;
+  /* On a phone the page scrolls: a chapter is as long as it is and nothing is paged. The rack of disks has what the
+     first screen leaves under the title and the machine, and the stylesheet works that out from the title's height. */
+  const box = $(".box"), rack = $(".disks"), head = $(".id");
+  const headed = () => box.style.setProperty("--head", `${head.offsetHeight}px`);
+  headed();
+  if (window.ResizeObserver) new ResizeObserver(headed).observe(head);
+  // the machine stays at the top of a phone's screen while the page goes under it: from then on its sky has an edge
+  let looked = false;
+  const under = () => { looked = false; box.classList.toggle("is-under", phone.matches && rack.getBoundingClientRect().top < pc.getBoundingClientRect().bottom - 1); };
+  addEventListener("scroll", () => { if (!looked) { looked = true; requestAnimationFrame(under); } }, { passive: true });
   function paginate(id, keep) {
     const c = chapters[id];
     draw(c, null);
     c.folio.hidden = true;
     c.el.classList.remove("is-paged");
     c.pages = null;
-    if (!over(c)) return;
+    if (phone.matches || !over(c)) return;
     c.folio.hidden = false;                  // the folio takes room: measure with it there
     c.el.classList.add("is-paged");
     const order = c.units.filter(u => u.getClientRects().length)     // not the asides this layout leaves out
@@ -549,7 +588,8 @@
     const long = b.height * k, span = long * Math.cos(rad(TILT)) * 900 / (900 - long * Math.sin(rad(TILT)));   // its length, and the height that shows lying back
     const row = wide.matches ? -1 : css("--row", d.el);
     // in the rack a disk of the first row has its top under the machine's foot, and on a phone one of the second its end under the page
-    const top = row === 0 ? css("--hide") : 0, end = row === 1 && phone.matches ? Math.max(0, 1 - css("--v2") / b.height) * 100 : 0;
+    const r = rack.getBoundingClientRect();
+    const top = row === 0 ? Math.max(0, r.top - b.top) : 0, end = row === 1 && phone.matches ? Math.max(0, (b.bottom - r.bottom) / b.height) * 100 : 0;
     // what of the disk shows. q: 1 tucked in its place, 0 clear. Whatever has gone past the mouth of the slot is inside the drive, and not drawn
     const clip = (q, slide = 0) => `inset(${Math.max(top * q, slide / k, 0).toFixed(2)}px -40px ${end ? `calc(${(end * q).toFixed(2)}% - ${(40 * (1 - q)).toFixed(1)}px)` : "-40px"} -40px)`;
     return { dx, dy, k, long, span, held: long * 0.4, up: wide.matches ? -12 : -6, size: b.height, clip };
@@ -642,11 +682,24 @@
     syncRing();
   }
 
+  function toTop(then) {                     // the page back to its top, and then
+    const t0 = performance.now();
+    scrollTo({ top: 0, behavior: "smooth" });
+    (function wait() {
+      if (scrollY >= 1 && performance.now() - t0 < 1200) return requestAnimationFrame(wait);
+      if (scrollY >= 1) scrollTo(0, 0);
+      then();
+    })();
+  }
   function insert(id, instant, screen = 0) {
     const next = byId[id], prev = byId[wanted];
     if (!next) return;
     instant = instant || still.matches;
     if (next === prev && !instant) return;
+    if (next !== prev && phone.matches && scrollY > 2) {   // down a phone's page (the way back, the drive's button): the rack is at the top, so go there first
+      if (!instant) return toTop(() => insert(id, false, screen));
+      scrollTo(0, 0);
+    }
     face.poke();
     // where the two are drawn now, before anything changes
     const was = new Map(disks.map(d => [d, { m: drawn(d), b: d.el.getBoundingClientRect(), phase: d.phase }]));
@@ -764,9 +817,16 @@
     const id = location.hash.slice(1) || "start";
     if (byId[id] && id !== wanted) insert(id);
   });
+  const size = () => `${innerWidth} ${css("--pc-w")} ${phone.matches}`;
+  let sized = size();
   addEventListener("resize", () => {         // a new size: finish at once, and fetch the pictures at that size
+    // a phone's browser hides its bars as the page scrolls, and says the window has grown: nothing here is sized by that
+    const now = size(), same = now === sized;
+    sized = now;
+    if (phone.matches && same) return;
     insert(wanted, true);
     face.lay();
+    under();
   });
 
   fetchShots(wanted);

@@ -137,13 +137,16 @@ const rows = {
   nums: disk => disk.figures.length && shotsOf(disk.id).length ? `<dl class="rows nums">${disk.figures.map(f => row(f.value, run(f.label))).join("")}</dl>` : "",
 };
 
+// the way back to the start disk, above a chapter's title. The start panel has none to offer, and keeps its room
+// (the same words, unseen), so every panel's title stands at one height.
+const backMark = `<svg viewBox="0 0 12 10" aria-hidden="true"><path d="M5 1 1 5l4 4M1 5h11"/></svg><span>${esc(SITE.disks[0].label)}</span>`;
 function chapter(disk, n) {
   const arrow = d => `<svg viewBox="0 0 8 10" aria-hidden="true"><path d="${d}"/></svg>`;
   const folio = `<p class="folio" hidden><button type="button" class="pg-prev" aria-label="Previous page">${arrow("M7 0v10L1 5z")}</button><span class="pg-count" aria-live="polite"></span><button type="button" class="pg-next" aria-label="Next page">${arrow("M1 0v10l6-5z")}</button></p>`;
   const intro = disk.kind === "intro";
   return `<article class="chapter${intro ? " intro" : ""}" id="m-${disk.id}" data-for="${disk.id}"${n ? ` style="--n:${n}"` : ""}>
 <header>
-${intro ? "" : `<a class="back" href="#${SITE.disks[0].id}"><svg viewBox="0 0 12 10" aria-hidden="true"><path d="M5 1 1 5l4 4M1 5h11"/></svg><span>${esc(SITE.disks[0].label)}</span></a>`}
+${intro ? `<span class="back is-none" aria-hidden="true">${backMark}</span>` : `<a class="back" href="#${SITE.disks[0].id}">${backMark}</a>`}
 ${heading(disk.title)}
 </header>
 <div class="body">
@@ -252,6 +255,7 @@ ${SITE.disks.map(d => `<div class="screens" data-for="${d.id}">\n${screensFor(d)
 ${SITE.disks.map(d => chapter(d, d.kind === "intro" ? 0 : ++n)).join("\n")}
 </section>
 </main>
+<i class="tint tint-top" aria-hidden="true"></i><i class="tint tint-foot" aria-hidden="true"></i>
 <script src="site.min.js" defer></script>
 </body>
 </html>
