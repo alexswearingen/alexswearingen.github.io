@@ -12,7 +12,7 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 const site = { window: {} }; vm.runInNewContext(readFileSync(new URL("../content.js", import.meta.url), "utf8"), site);
 const DISKS = site.window.SITE.disks.map(d => d.id), PLACES = DISKS.slice(1).map((_, i) => i).join("");
-const SIZES = [[1440,900],[1280,720],[1920,1080],[1024,768],[390,844],[375,667],[1160,700],[820,1180]];
+const SIZES = [[1440,900],[1280,720],[1920,1080],[1024,768],[393,641],[430,740],[375,548],[1160,700],[820,1180]];
 const b = await chromium.launch({ executablePath: process.env.CHROMIUM || undefined, args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
 let fails = 0; const fail = m => { fails++; console.log("FAIL", m); };
 for (const [w, h] of SIZES) {
@@ -26,7 +26,8 @@ for (const [w, h] of SIZES) {
     const m = await p.evaluate(PLACES => {
       const r = document.documentElement, vis = e => e && e.getClientRects().length && getComputedStyle(e).visibility !== "hidden";
       const out = [];
-      if (r.scrollHeight > innerHeight || r.scrollWidth > innerWidth) out.push(`scroll ${r.scrollWidth - innerWidth},${r.scrollHeight - innerHeight}`);
+      // a phone's page scrolls down; no page scrolls sideways
+      if (r.scrollWidth > innerWidth || (innerWidth >= 736 && r.scrollHeight > innerHeight)) out.push(`scroll ${r.scrollWidth - innerWidth},${r.scrollHeight - innerHeight}`);
       const ch = [...document.querySelectorAll(".chapter")].filter(c => c.offsetParent);
       if (ch.length !== 1 || ch[0].dataset.for !== r.dataset.wanted) out.push("chapter shown: " + ch.map(c => c.dataset.for));
       const body = ch[0]?.querySelector(".body"); if (body && body.scrollHeight > body.clientHeight + 1) out.push("manual text overflows its page");
@@ -208,6 +209,43 @@ const greet = site.window.SITE.person.greet;
   const home = await fig(p);
   if (home.wanted !== "start" || home.pose !== "smile" || home.lit < 0.05) fail(`the drive's button with a disk in: ${JSON.stringify(home)}`);
   if (errs.length) fail(`power and drive errors: ${errs.join("; ")}`);
+  await ctx.close(); }
+// a panel's title stands at one height on every disk, with the way back above it or without, at every size. And a
+// phone's page scrolls: nothing is paged, the first screen ends with the guide's edge and title showing, the machine
+// stays at the top while the guide goes under it, the screens go by on their own, and the way back from down the page
+// goes to the top before the disks change places.
+for (const [w, h] of SIZES) { const phone = w < 600; const ctx = await b.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: phone ? 2 : 1, isMobile: phone, hasTouch: phone }); const p = await ctx.newPage();
+  const at = {};
+  const look = () => p.evaluate(() => { const q = s => document.querySelector(s), r = e => e.getBoundingClientRect(), ch = [...document.querySelectorAll(".chapter")].find(e => e.getClientRects().length);
+    return { title: r(ch.querySelector("h2")).top - r(q(".manual")).top, card: r(q(".manual")).top, pc: [r(q(".pc")).top, r(q(".pc")).bottom], names: [...document.querySelectorAll(".disk:not([aria-pressed=true]) .label-name")].map(e => r(e).bottom),
+      paged: ch.classList.contains("is-paged"), folio: !!ch.querySelector(".folio")?.getClientRects().length, ghost: !!ch.querySelector(".back.is-none")?.getClientRects().length,
+      under: q(".box").classList.contains("is-under"), auto: q(".view").classList.contains("is-auto"), arrows: !!q(".pager .next").getClientRects().length, count: q(".count").textContent,
+      y: scrollY, most: document.documentElement.scrollHeight - innerHeight, wanted: document.documentElement.dataset.wanted }; });
+  for (const d of ["start", "slopcop"]) { await p.goto("about:blank"); await p.goto(`${base}#${d}`, { waitUntil: "networkidle" }); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(300); at[d] = await look(); }
+  const s = at.start, o = at.slopcop;
+  if (s.ghost && Math.abs(s.title - o.title) > 0.6) fail(`${w}x${h}: the start panel's title is at ${s.title.toFixed(1)}, a disk's at ${o.title.toFixed(1)}`);
+  if (!phone) { if (o.auto || !o.arrows) fail(`${w}x${h}: with a pointer the screens are stepped by their buttons`); await ctx.close(); continue; }
+  for (const [d, m] of Object.entries(at)) {
+    if (m.paged || m.folio) fail(`${w}x${h} ${d}: a phone's chapter is paged`);
+    if (!(m.card <= h - 40)) fail(`${w}x${h} ${d}: the guide starts at ${Math.round(m.card)}, off the first screen`);
+    if (m.names.some(y => y > m.card)) fail(`${w}x${h} ${d}: a disk's name is under the guide`);
+    if (m.under) fail(`${w}x${h} ${d}: the machine's sky has its edge before anything is under it`);
+  }
+  if (!o.auto || o.arrows) fail(`${w}x${h}: on a phone the screens go by on their own, without buttons`);
+  if (s.auto) fail(`${w}x${h}: the start disk's screens do not go by on their own`);
+  // on their own: the count moves on (a still is up for a few seconds, a clip for its length, at most 14 s)
+  let later = o; for (let t = 0; t < 31 && later.count === o.count; t++) { await p.waitForTimeout(500); later = await look(); }
+  if (later.count === o.count) fail(`${w}x${h}: the screen did not move on by itself (${later.count})`);
+  // down the page: the machine stays, the guide is under it
+  await p.evaluate(() => scrollTo(0, document.documentElement.scrollHeight)); await p.waitForTimeout(400);
+  const down = await look();
+  if (Math.abs(down.pc[0] - 8) > 0.6) fail(`${w}x${h}: down the page the machine is at ${down.pc[0].toFixed(1)}, not at the top`);
+  if (down.most > o.card - o.pc[1] + o.pc[0] && !(down.card < down.pc[1] && down.under)) fail(`${w}x${h}: down the page the guide is not under the machine (${Math.round(down.card)}, ${Math.round(down.pc[1])}, ${down.under})`);
+  // the way back from there: to the top, and the start disk goes in
+  if (down.y > 60) { await p.evaluate(() => scrollTo(0, 60)); await p.waitForTimeout(200); }
+  await p.locator(".chapter[data-for=slopcop] .back").tap(); await p.waitForTimeout(2600);
+  const home = await look();
+  if (home.wanted !== "start" || home.y > 0.5 || home.under) fail(`${w}x${h}: the way back from down the page: ${JSON.stringify({ wanted: home.wanted, y: home.y, under: home.under })}`);
   await ctx.close(); }
 // left alone: it shows every disk's card once, in order, and puts none of them in; then it nods off, and a move of the pointer wakes it.
 // The page's clock is driven by hand here, so a minute of waiting takes a moment.
