@@ -1,0 +1,485 @@
+/* The box and its manual. Four inks on white board: sky, putty, slate, one red. Pictures are printed in
+   continuous tone; one grain tile lies over the whole sheet.
+   Sizes come from the step rules tools/build.mjs writes in front of this file: every picture is shown at the size it was printed. */
+
+@font-face { font-family: "Tanker"; src: url(fonts/tanker.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Apfel"; src: url(fonts/apfel-regular.woff2) format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Apfel"; src: url(fonts/apfel-mittel.woff2) format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Apfel"; src: url(fonts/apfel-fett.woff2) format("woff2"); font-weight: 700; font-display: swap; }
+
+:root {
+  --sky: #5da7e9;
+  --sky-top: #4f9be5;               /* the blue ink falls off toward the foot of the box, as a printed sky does */
+  --sky-foot: #8dc1ef;
+  --paper: #f9f7f1;
+  --ink: #16222a;
+  --putty: #cbc0aa;
+  --red: #d52a26;
+  --quiet: #45535b;                 /* ink at about 78% on paper: second lines */
+  --rule: rgb(22 34 42 / .28);
+  --tube: #0b1216;                  /* the unlit tube */
+  --lit: #f3f1ea;                   /* the tube's white */
+  --phos: #d9f6de;                  /* the tube's phosphor when it draws in characters */
+  --sans: "Apfel", "Helvetica Neue", Helvetica, Arial, sans-serif;          /* every line of text */
+  --display: "Tanker", "Arial Narrow", Impact, sans-serif;                   /* the name, chapter titles, figures: capitals only */
+  --ease-out: cubic-bezier(.23, 1, .32, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--sky); color: var(--ink); -webkit-text-size-adjust: 100%; }
+body { margin: 0; font: 400 var(--fs, 14px)/1.4 var(--sans); }
+body::after {                       /* the sheet's grain, over ink and paper alike */
+  content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none;
+  background: var(--grain) 0 0 / var(--grain-w) var(--grain-w);
+}
+[hidden] { display: none !important; }
+h1, h2, p, dl, dd, ul, figure { margin: 0; padding: 0; }
+ul { list-style: none; }
+a { color: inherit; text-underline-offset: .18em; text-decoration-thickness: 1px; }
+::selection { background: var(--ink); color: var(--paper); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+button { font: inherit; color: inherit; }
+.nb { white-space: nowrap; }
+.redact { position: relative; display: inline-block; width: 5.6em; height: .84em; vertical-align: -.09em; background: currentColor; overflow: hidden; }   /* a name that may not be printed yet */
+.redact span { position: absolute; clip-path: inset(50%); }
+
+/* ------------------------------------------------------------------ the page */
+.box {
+  position: relative; display: grid; height: 100svh; overflow: clip;
+  background: linear-gradient(var(--sky-top), var(--sky) 45%, var(--sky-foot));
+}
+.box::after { content: ""; background: var(--paper); z-index: 2; }   /* the manual's paper */
+.id, .manual { position: relative; z-index: 3; }
+/* the sky's clouds: a bank along the foot of the box, and one or two behind the machine */
+.box::before, .stage::before, .pc::before, .pc::after { position: absolute; z-index: 1; background: 0 0 / 100% 100% no-repeat; pointer-events: none; }
+
+/* ------------------------------------------------------------------ identity */
+h1 { font: 400 calc(var(--h1, 40px) * 1.34)/.88 var(--display); letter-spacing: .004em; text-transform: uppercase; text-wrap: balance; margin-left: -.022em; }   /* its capitals' side bearing taken back, so the stems stand on the text's edge */
+.line { font: 500 var(--line, 16px)/1.3 var(--sans); text-wrap: pretty; }
+.links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 11px; font: 700 calc(var(--link, 15px) * .93)/1 var(--sans); }
+.links a { display: inline-flex; align-items: center; min-height: 32px; }
+.links a.primary {
+  padding: 0 12px; background: var(--ink); color: var(--paper); text-decoration: none;
+  transition: background-color .12s ease;
+}
+.links a.primary:hover { background: #2b3b45; }
+.links a:not(.primary):hover { text-decoration-thickness: 2px; }
+
+/* ------------------------------------------------------------------ the machine */
+.pc { position: relative; width: var(--pc-w); height: var(--pc-h); flex: none; }
+.pc > * { position: absolute; }
+.pc-art { inset: calc(-1 * var(--pc-pad)); background: var(--pc-img) 0 0 / 100% 100% no-repeat; }   /* the picture carries its own shadow */
+.pc-art { z-index: 20; pointer-events: none; }
+.tube { z-index: 15; left: var(--glass-x); top: var(--glass-y); width: var(--glass-w); height: var(--glass-h); background: var(--tube); overflow: hidden; }
+.tube, .disks { -webkit-user-select: none; user-select: none; }   /* a drag across the machine marks nothing */
+.glass { z-index: 22; left: var(--glass-x); top: var(--glass-y); width: var(--glass-w); height: var(--glass-h); background: var(--glass-img) 0 0 / 100% 100% no-repeat; pointer-events: none; }
+.lamp { z-index: 21; left: var(--lamp-x); top: var(--lamp-y); width: var(--lamp-w); height: var(--lamp-w); background: var(--lamp-img) 0 0 / 100% 100% no-repeat; opacity: 0; pointer-events: none; }
+.edge {                              /* the disk in the drive: its end in the slot, shell at the corners and the label's spine between */
+  z-index: 21; left: calc(var(--slot-x) + var(--slot-w) * .04); width: calc(var(--slot-w) * .92);
+  top: calc(var(--slot-y) - var(--slot-h) * .1); height: max(2px, calc(var(--slot-h) * .52)); pointer-events: none;
+  background: linear-gradient(rgb(255 255 255 / .3), rgb(255 255 255 / 0) 45%, rgb(0 0 0 / .18)),
+    linear-gradient(to right, var(--shell-c) 0 6.5%, var(--stripe-c) 6.5% 91.5%, var(--shell-c) 91.5%);
+}
+.ring {                              /* keyboard focus on the disk that is in the drive */
+  z-index: 41; display: none; left: calc(var(--slot-x) - 8px); top: calc(var(--slot-y) - 9px); width: calc(var(--slot-w) + 16px); height: 18px;
+  outline: 2px solid var(--ink); outline-offset: 0; pointer-events: none;
+}
+.pc.has-focus .ring { display: block; }
+
+/* the tube's picture fills the glass: one screen, a status line across its foot, and the tube's own marks over both */
+.view { --bar-h: calc(var(--glass-h) * .092); position: absolute; inset: 0; background: var(--tube); color: var(--lit); font-family: var(--sans); overflow: hidden; }
+.view::after { content: ""; position: absolute; inset: 0; z-index: 6; background: #fff; opacity: 0; pointer-events: none; }   /* the flash as the picture folds and opens */
+.screens { display: none; position: absolute; inset: 0; }
+.no-js .screens[data-for="start"] { display: block; }
+.screen { position: absolute; inset: 0; display: none; }
+.screen.is-on { display: block; z-index: 1; }
+.screen.is-under { display: block; }   /* the screen being drawn over stays until the new one covers it */
+.shot { cursor: pointer; background: var(--tube); }
+/* the capture is the whole picture: it fills the tube, a hair inside the corners the casing rounds off */
+.shot img, .shot video { position: absolute; left: var(--shot-x); top: var(--shot-y); display: block; width: calc(100% - 2 * var(--shot-x)); height: calc(100% - 2 * var(--shot-y)); object-fit: cover; object-position: 50% 0; filter: saturate(1.14) contrast(1.06); -webkit-user-drag: none; }
+/* a clip lies over its own first frame (the img) and shows once it is really playing */
+.shot video { opacity: 0; pointer-events: none; }
+.shot.is-live video { opacity: 1; }
+/* the status line is set over the picture's foot, on a shade that is solid behind the words and gone above them.
+   Shade and line belong to the tube, not to a screen: they stay where they are while the picture changes. */
+.shade { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: calc(var(--bar-h) * 1.75); background: linear-gradient(rgb(9 14 18 / 0), rgb(9 14 18 / .62) 24%, rgb(9 14 18 / .96) 42%, rgb(9 14 18) 50%); pointer-events: none; }
+.sweep { position: absolute; left: 0; right: 0; top: 0; z-index: 2; height: calc(var(--glass-h) * .16); opacity: 0; pointer-events: none; }   /* the line that draws a new picture, and the glow behind it */
+.bar {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; height: var(--bar-h);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 8% calc(var(--glass-h) * .04);
+  font: 500 max(10px, calc(var(--bar) * .5))/1 var(--sans); letter-spacing: .01em; white-space: nowrap;
+}
+.cap { overflow: hidden; text-overflow: ellipsis; }
+.pager { display: flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.pager[hidden] { display: none; }
+.count { display: inline-block; min-width: 1.45em; text-align: center; }   /* this face's digits differ in width: the arrows must not move as the count changes */
+.pager button {
+  display: grid; place-items: center; width: calc(var(--bar) - 4px); height: calc(var(--bar) - 7px); padding: 0;
+  background: none; border: 1px solid rgb(243 241 234 / .55); border-radius: 0; cursor: pointer;
+}
+.pager button:hover { background: rgb(243 241 234 / .18); }
+.pager button:active { background: var(--lit); }
+.pager button:active svg { fill: var(--tube); }
+.pager button:focus-visible { outline: 2px solid var(--lit); outline-offset: 1px; }
+.pager svg { width: 6px; height: 8px; fill: var(--lit); }
+/* scan lines, the fall-off toward the tube's corners, and a slow band of the refresh */
+.crt {
+  position: absolute; inset: 0; z-index: 5; pointer-events: none; overflow: hidden;
+  background:
+    radial-gradient(ellipse 78% 78% at 50% 48%, rgb(0 0 0 / 0) 58%, rgb(0 0 0 / .46) 100%),
+    repeating-linear-gradient(to bottom, rgb(0 0 0 / 0) 0 2px, rgb(0 0 0 / .17) 2px 3px);
+  box-shadow: inset 0 0 calc(var(--glass-w) * .045) rgb(0 0 0 / .65);
+}
+.crt::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 22%; background: linear-gradient(rgb(255 255 255 / 0), rgb(255 255 255 / .05) 60%, rgb(255 255 255 / 0)); transform: translateY(-110%); }
+.tube.is-blank .crt::after { visibility: hidden; }
+
+/* screens the machine draws itself: lit type on the dark tube */
+.type { background: var(--tube); color: var(--lit); padding: 7% 8% calc(var(--bar-h) + var(--glass-h) * .04); display: flex !important; flex-direction: column; visibility: hidden; text-shadow: 0 0 .5em rgb(243 241 234 / .32); }
+.type.is-on, .type.is-under { visibility: visible; }
+.t-name { font: 400 calc(var(--view-w) * var(--k-name, .13))/.9 var(--display); text-transform: uppercase; }
+.t-line { margin-top: .6em; font: 500 max(12px, calc(var(--view-w) * .044))/1.25 var(--sans); max-width: 21em; text-wrap: pretty; }
+.t-meta { margin-top: auto; display: flex; flex-direction: column; gap: .15em; font: 400 max(12px, calc(var(--view-w) * .036))/1.3 var(--sans); color: var(--putty); }
+/* the figure: drawn by site.js over the whole glass, in whole device pixels, with a touch of the phosphor's bloom.
+   It has the glass to itself: the status line and its shade are away while it is the screen. */
+.face { background: var(--tube); cursor: pointer; color: var(--phos); font-family: var(--sans); }
+.face canvas { position: absolute; left: 50%; top: 0; transform: translateX(-50%); image-rendering: pixelated; filter: drop-shadow(0 0 calc(var(--glass-w) * .004) rgb(150 255 180 / .5)); }
+.view.is-bare .bar, .view.is-bare .shade { display: none; }
+/* what it says: a block of lit phosphor beside its head, with the words dark on it */
+.say {
+  --d: var(--dot, 2px);
+  position: absolute; left: 68%; top: 15%; max-width: 27.5%; margin: 0; padding: .5em .7em .55em;
+  background: var(--phos); color: var(--tube); font: 700 clamp(10px, calc(var(--glass-w) * .031), 17px)/1.22 var(--sans); letter-spacing: .005em; text-wrap: balance;
+  filter: drop-shadow(0 0 calc(var(--glass-w) * .006) rgb(150 255 180 / .45));
+}
+.say span + span { visibility: hidden; }   /* the part of the line not typed yet: there for the block's size */
+.say::before {                             /* its tail, toward the mouth: three steps of two dots */
+  content: ""; position: absolute; right: 100%; top: 58%; width: calc(var(--d) * 6); height: calc(var(--d) * 6); background: var(--phos);
+  clip-path: polygon(100% 0, 100% 100%, 66.7% 100%, 66.7% 66.7%, 33.3% 66.7%, 33.3% 33.3%, 0 33.3%, 0 0);
+}
+/* a card's words: the disk's name dark on the card's lit bar, and a line under the card */
+.card-t, .card-h { position: absolute; margin: 0; pointer-events: none; }
+.card-t { display: flex; align-items: center; padding: 0 .5em; color: var(--tube); font: 700 clamp(9.5px, calc(var(--glass-w) * .027), 15px)/1 var(--sans); white-space: nowrap; overflow: hidden; }
+.card-h { font: 500 clamp(10px, calc(var(--glass-w) * .03), 16px)/1.25 var(--sans); text-wrap: balance; text-shadow: 0 0 .5em rgb(150 255 180 / .4); }
+/* asleep */
+.zz { position: absolute; left: 66%; top: 9%; margin: 0; font: 700 calc(var(--glass-w) * .05)/1 var(--sans); font-style: normal; }
+.zz i { position: absolute; font-style: normal; opacity: 0; text-shadow: 0 0 .4em rgb(150 255 180 / .5); }
+.zz i:nth-child(1) { left: 0; top: 2.1em; font-size: .7em; }
+.zz i:nth-child(2) { left: .8em; top: 1.1em; font-size: .85em; }
+.zz i:nth-child(3) { left: 1.6em; top: 0; text-transform: uppercase; }
+/* the machine's two power buttons (drawn in its picture) and the lamps beside them */
+.power {
+  z-index: 23; width: calc(var(--pc-w) * .043); height: calc(var(--pc-w) * .043); margin: calc(var(--pc-w) * -.0215) 0 0 calc(var(--pc-w) * -.0215);
+  padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.power-crt { left: calc(var(--pc-w) * .8596); top: calc(var(--pc-h) * .7362); }
+.power-box { left: calc(var(--pc-w) * .9323); top: calc(var(--pc-h) * .9077); }
+.power::after { content: ""; position: absolute; inset: min(0px, calc((var(--pc-w) * .043 - 36px) / 2)); border-radius: 50%; }   /* never a smaller target than 36 px */
+.power:hover { background: rgb(255 255 255 / .16); }
+.power:active { background: rgb(60 45 20 / .1); box-shadow: inset 0 calc(var(--pc-w) * .003) calc(var(--pc-w) * .007) rgb(50 38 16 / .5); }
+.power:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.led {
+  z-index: 23; width: calc(var(--pc-w) * .0085); height: calc(var(--pc-w) * .0085); margin: calc(var(--pc-w) * -.00425) 0 0 calc(var(--pc-w) * -.00425);
+  border-radius: 50%; background: radial-gradient(circle at 42% 36%, #e9ffd9, #6fe04f 42%, #2a8f24 78%); box-shadow: 0 0 calc(var(--pc-w) * .006) rgb(120 255 90 / .55); pointer-events: none;
+}
+.led-crt { left: calc(var(--pc-w) * .8133); top: calc(var(--pc-h) * .7406); }
+.led-box { left: calc(var(--pc-w) * .8846); top: calc(var(--pc-h) * .9103); }
+.pc.is-dark .led-crt, .pc.is-halt .led-box { display: none; }
+/* the drive's button (drawn in the machine's picture too) */
+.eject {
+  position: absolute; z-index: 23; left: calc(var(--pc-w) * .1472); top: calc(var(--pc-h) * .9153); width: calc(var(--pc-w) * .0472); height: calc(var(--pc-h) * .0242);
+  padding: 0; border: 0; border-radius: calc(var(--pc-w) * .003); background: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.eject::after { content: ""; position: absolute; inset: min(0px, calc((var(--pc-h) * .0242 - 32px) / 2)) min(0px, calc((var(--pc-w) * .0472 - 36px) / 2)); }   /* a target a finger can find */
+.eject:hover { background: rgb(255 255 255 / .18); }
+.eject:active { background: rgb(60 45 20 / .12); box-shadow: inset 0 calc(var(--pc-w) * .002) calc(var(--pc-w) * .005) rgb(50 38 16 / .5); }
+.eject:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.no-js .eject { display: none; }
+/* the monitor is on and the computer is not */
+.nosignal { display: none; position: absolute; z-index: 2; inset: 0; margin: auto; width: max-content; height: max-content; font: 700 clamp(10px, calc(var(--glass-w) * .034), 18px)/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--phos); text-shadow: 0 0 .5em rgb(150 255 180 / .45); pointer-events: none; }
+.pc.is-halt:not(.is-dark) .tube.is-blank .nosignal { display: block; }
+.no-js .power { display: none; }
+.no-js .face { display: none !important; }
+.no-js .splash { visibility: visible; }
+/* the start disk's second screen is a contact sheet: four captures, each a way to its disk */
+.splash { padding: 0 0 var(--bar-h); justify-content: center; text-shadow: none; }
+.t-work { display: grid; grid-template-columns: repeat(2, var(--thumb-w)); justify-content: center; gap: var(--thumb-gap); }
+.t-work a { display: block; color: var(--lit); text-decoration: none; }
+.t-work i { display: block; height: var(--thumb-h); background: 0 0 / 100% 100% no-repeat; outline: 1px solid rgb(243 241 234 / .45); }
+.t-work b { display: block; height: var(--thumb-cap); padding-top: .36em; font: 700 max(11px, calc(var(--view-w) * .032))/1 var(--sans); white-space: nowrap; }
+.t-work a:hover i { outline: 2px solid var(--lit); }
+.t-work a:hover b { text-decoration: underline; text-underline-offset: .18em; }
+.t-work a:focus-visible { outline: 2px solid var(--lit); outline-offset: 2px; }
+.t-figs { margin: auto 0; display: grid; }
+.t-figs > div { display: grid; grid-template-columns: 2.5em 1fr; align-items: center; gap: 0 .45em; border-top: 1px solid rgb(243 241 234 / .4); padding: .14em 0 .1em; font-size: calc(var(--view-w) * .172); font-size: round(calc(var(--view-w) * .172), 2px); }
+.t-figs > div:last-child { border-bottom: 1px solid rgb(243 241 234 / .4); }
+.t-figs dt { font: 400 1em/1 var(--display); font-variant-numeric: tabular-nums; white-space: nowrap; position: relative; top: .01em; }
+.t-figs dd { font: 500 max(12px, calc(var(--view-w) * .042))/1.2 var(--sans); color: var(--putty); text-wrap: balance; }
+.t-figs.n2 > div { font-size: calc(var(--view-w) * .22); grid-template-columns: 2.9em 1fr; }
+.t-figs.n1 > div { font-size: calc(var(--view-w) * .4); grid-template-columns: 1fr; border: 0; }
+.t-figs.n1 dd { font-size: max(12px, calc(var(--view-w) * .052)); }
+
+/* what the machine does when a disk goes in (site.js sets the classes) */
+.tube.is-blank .view, .tube.is-blank .type.is-on { visibility: hidden; }   /* a type screen sets its own visibility: name it too */
+.pc.is-empty .edge { visibility: hidden; }
+@media (prefers-reduced-motion: no-preference) {
+  .tube.is-off .view { animation: fold 150ms cubic-bezier(.6, 0, .9, .5) both; }
+  .tube.is-off .view::after { animation: flash-out 150ms linear both; }
+  .tube.is-on .view { animation: unfold 300ms cubic-bezier(.2, .75, .25, 1) both; }
+  .tube.is-on .view::after { animation: flash-in 300ms ease-out both; }
+  /* a new screen of the same disk is drawn over the old one, from the top, behind a lit line; going back is drawn the same way */
+  .screen.is-in { animation: draw 260ms cubic-bezier(.45, 0, .25, 1) both; }
+  .view.is-draw .sweep { animation: sweep 260ms cubic-bezier(.45, 0, .25, 1) both; background: linear-gradient(rgb(243 241 234 / 0), rgb(243 241 234 / .1) 70%, rgb(243 241 234 / .28) calc(100% - 2px), rgb(255 255 255 / .9) calc(100% - 2px)); }
+  .pc.is-reading .lamp { animation: lamp 560ms steps(1, end) both; }
+  .disk.is-nudge .disk-body { animation: nudge 1100ms cubic-bezier(.3, 0, .3, 1) both; }   /* "try this one": it lifts out of its place twice */
+  @keyframes nudge { 0%, 45%, 100% { transform: none; } 20% { transform: var(--nudge) var(--nudge) var(--nudge); } 68% { transform: var(--nudge) var(--nudge); } }
+  .crt::after { animation: band 6.5s linear infinite; }
+  .zz i { animation: zz 2.7s steps(1) infinite; }
+  .zz i:nth-child(2) { animation-delay: .6s; }
+  .zz i:nth-child(3) { animation-delay: 1.2s; }
+  @keyframes zz { 0% { opacity: 1; } 70%, 100% { opacity: 0; } }
+  @keyframes fold { 0% { transform: scale(1, 1); } 62% { transform: scale(1, .012); } 100% { transform: scale(0, .012); } }
+  @keyframes flash-out { 0% { opacity: 0; } 55% { opacity: .9; } 100% { opacity: 1; } }
+  @keyframes unfold { 0% { transform: scale(.4, .012); } 22% { transform: scale(1, .012); } 62% { transform: scale(1, 1); } 100% { transform: scale(1, 1); } }
+  @keyframes flash-in { 0% { opacity: 1; } 30% { opacity: .85; } 100% { opacity: 0; } }
+  @keyframes draw { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes sweep { 0% { transform: translateY(-100%); opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(calc(var(--glass-h) - 100%)); opacity: 0; } }
+  .shot video { transition: opacity 180ms linear; }
+  @keyframes lamp { 0% { opacity: 1; } 18% { opacity: 0; } 26% { opacity: 1; } 44% { opacity: 0; } 50% { opacity: 1; } 68% { opacity: .2; } 76% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes band { from { transform: translateY(-110%); } to { transform: translateY(560%); } }
+}
+
+/* ------------------------------------------------------------------ the disks */
+.disks { position: relative; flex: none; }
+.disk {
+  position: absolute; left: 0; top: 0; width: var(--disk-w); height: var(--disk-h); padding: 0; border: 0; background: none;
+  transform: translate(var(--x), var(--y)); z-index: calc(6 + var(--k)); cursor: pointer; text-align: left; -webkit-tap-highlight-color: transparent;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .disk-fly { will-change: transform; }
+}
+.disk.is-flying { z-index: 30; }
+.disk.is-top { z-index: 31; }
+.disk:focus-visible { outline: none; }
+.disk:focus-visible .disk-body { outline: 2px solid var(--ink); outline-offset: 2px; }
+.disk-fly { position: absolute; inset: 0; display: block; transform-origin: 50% 0; }
+.disk-body { position: absolute; inset: 0; display: block; transition: transform 140ms var(--ease-out); }
+.disk-rim {                          /* the disk's near end, seen as it lies back on its way into the drive: shell at the corners, the label's spine between */
+  position: absolute; left: .6%; right: .6%; top: calc(100% - .5px); height: calc(var(--disk-w) * .036); display: block; transform-origin: 50% 0; transform: scaleY(0);
+  background: linear-gradient(rgb(255 255 255 / .34), rgb(255 255 255 / 0) 22%, rgb(0 0 0 / .3)), linear-gradient(to right, var(--shell) 0 6.9%, var(--stripe) 6.9% 91.8%, var(--shell) 91.8%);
+}
+.disk-shade { position: absolute; inset: 0; display: block; overflow: hidden; pointer-events: none; }   /* the shade falls on the disk's face, not on its near end */
+.disk-dip {                          /* the slot's shade on the part of a disk that is just going in (site.js keeps it at the slot's mouth) */
+  position: absolute; left: 0; right: 0; top: 0; height: calc(var(--disk-h) * .22); display: block; opacity: 0; pointer-events: none;
+  background: linear-gradient(rgb(5 8 10 / .92), rgb(5 8 10 / .5) 36%, rgb(5 8 10 / 0));
+}
+.disk[data-shell="slate"] { --shell: #2b343b; }
+.disk[data-shell="putty"] { --shell: #cbc0aa; }
+.disk[data-shell="sky"] { --shell: #3f7fc4; }
+.disk-body::before { content: ""; position: absolute; inset: calc(-1 * var(--disk-pad)); background: 0 0 / 100% 100% no-repeat; }   /* the picture and the shadow it throws */
+.disk[data-shell="slate"] .disk-body::before { background-image: var(--disk-slate); }
+.disk[data-shell="putty"] .disk-body::before { background-image: var(--disk-putty); }
+.disk[data-shell="sky"] .disk-body::before { background-image: var(--disk-sky); }
+/* the label: a band in the disk's second ink, the title set under it, and the spine that wraps the disk's end */
+.label {
+  position: absolute; left: 6.84%; right: 8.17%; top: 36.52%; bottom: .6%; display: flex; flex-direction: column;
+  font-family: var(--sans); color: var(--ink); overflow: hidden;
+}
+.label::before { content: ""; flex: none; height: var(--band, 5px); background: var(--stripe); }
+.label::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--spine, 5px); background: var(--stripe); }
+.disk[data-stripe="slate"] { --stripe: var(--ink); }
+.disk[data-stripe="red"] { --stripe: var(--red); }
+.disk[data-stripe="sky"] { --stripe: var(--sky); }
+.disk[data-stripe="putty"] { --stripe: var(--putty); }
+.label-name { margin: var(--label-top, .34em) .4em 0 .5em; font: 700 var(--label)/1.05 var(--sans); white-space: nowrap; }
+.label-name .l2 { display: var(--l2, inline); }   /* the smallest labels show one line: a two-company name keeps its first (the rest is in the manual's title) */
+.label-name .nl { display: var(--nl, none); }
+.label-name .brk { display: var(--brk, inline); }   /* a two-word name takes two lines on the smallest labels */
+.more { position: var(--more, absolute); clip-path: var(--more-clip, inset(50%)); }   /* a label too narrow for the whole name keeps its first word */
+.label-sub { display: none; }       /* the short second line everywhere: this face is wider than the label's old one */
+.label-short { display: block; margin: .16em .4em 0 .5em; font: 400 var(--label-sub, 12px)/1.1 var(--sans); white-space: nowrap; }
+.label-lines { display: none; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .disk:hover .disk-body { transform: var(--nudge); }
+}
+
+/* ------------------------------------------------------------------ the manual */
+.manual { font-size: var(--fs); container-type: size; background: var(--paper); }
+.chapter { display: none; flex-direction: column; position: relative; height: 100%; padding: var(--m-top) var(--m-side) 0; }
+.chapter header { flex: none; }
+/* the body shows what fits; when a chapter is longer than its page, site.js turns it into pages and shows the folio */
+.body { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.body > * { flex: none; }
+.folio { flex: none; display: flex; justify-content: flex-end; align-items: center; gap: .55em; padding: .5em 0 .7em; font: 700 .95em/1 var(--sans); font-variant-numeric: tabular-nums; }
+.folio button { display: grid; place-items: center; width: 30px; height: 26px; padding: 0; background: none; border: 1px solid var(--ink); border-radius: 0; cursor: pointer; }
+.folio button:hover { background: var(--ink); }
+.folio button:hover svg { fill: var(--paper); }
+.folio button:disabled { border-color: var(--rule); cursor: default; background: none; }
+.folio button:disabled svg { fill: var(--rule); }
+.folio svg { width: 7px; height: 9px; fill: var(--ink); }
+.chapter header { position: relative; }
+/* the way back to the start disk: above a chapter's title, on the text's edge */
+.back { display: inline-flex; align-items: center; gap: .45em; margin-bottom: .5em; padding: .3em 0; font: 700 .92em/1 var(--sans); color: var(--ink); text-decoration: none; }
+.back svg { width: 1em; height: .84em; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: square; }
+.back:hover span { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 2px; }
+.back:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.no-js .back { display: none; }
+/* One page design for every chapter: its title, then lists of rows (the last section of this file). */
+h2 { font: 400 calc(var(--h2, 38px) * 1.3)/.9 var(--display); letter-spacing: .004em; text-transform: uppercase; text-wrap: balance; margin-left: calc(var(--lsb, .03) * -1em); }
+h2.two span { display: inline-block; }
+h2.two span + span { margin-left: calc((var(--lsb2) - var(--lsb)) * -1em); }   /* the second piece starts its line on its own bearing */
+
+/* without scripts: every chapter, one after another */
+.no-js .box { height: auto; min-height: 100svh; }
+.no-js .manual { container-type: normal; }
+.no-js .chapter { display: block; height: auto; padding-bottom: 2em; }
+.no-js .body { display: block; overflow: visible; }
+
+/* ================================================================== wide: box front, machine, manual page */
+@media (min-width: 1160px) and (min-height: 660px) {
+  .box {
+    --col: calc(2 * var(--disk-w) + var(--dgx, var(--dgap)));      /* the left column is as wide as the two disks: the name is set to that measure too */
+    grid-template-columns: minmax(var(--gap), 1fr) var(--col) minmax(var(--gap), 1fr) var(--pc-w) minmax(var(--gap), 1fr) var(--manual);   /* spare width goes to the three gaps alike, so the machine stays midway */
+    grid-template-rows: minmax(12px, 1fr) var(--pc-h) minmax(12px, 1fr);
+    min-height: calc(var(--pc-h) + 24px);
+  }
+  .box::after { grid-column: 6; grid-row: 1 / -1; }
+  .stage { display: contents; }
+  .id { grid-column: 2; grid-row: 2; align-self: start; display: flex; flex-direction: column; align-items: flex-start; }
+  .pc { grid-column: 4; grid-row: 2; }
+  .disks { grid-column: 2; grid-row: 2; align-self: end; width: var(--col); height: calc(3 * var(--disk-h) + 2 * var(--dgap)); margin: 0 0 calc(var(--pc-foot) - 1px); }   /* on the line the base stands on (a disk's picture ends 1 px short of its box) */
+  .manual { grid-column: 6; grid-row: 1 / -1; }
+  .disk { --x: calc(var(--dcol) * (var(--disk-w) + var(--dgx, var(--dgap)))); --y: calc(var(--drow) * (var(--disk-h) + var(--dgap))); --nudge: translateY(-3px); }
+  .label { --band: 7%; --spine: 7%; }
+  .label-lines {                     /* a whole label has room for the lines one writes on */
+    display: block; flex: 1; min-height: 0; margin: .5em .5em calc(var(--disk-h) * .044 + .4em);
+    background: repeating-linear-gradient(to top, var(--rule) 0 1px, transparent 1px .92em) 0 0 / 100% 100%;
+    font-size: var(--label);
+  }
+  h1 { font-size: calc(var(--col) / 4.415); }    /* the surname's ink is 4.415 em wide: the name is exactly as wide as its column and the disks under it */
+  .id { --fs1: calc(var(--col) / 4.415); padding-top: calc(var(--pc-top) - var(--fs1) * .044); }   /* the capitals' tops on the casing's top edge (their line box starts .044 em above them: measured) */
+  .line { margin-top: .85em; max-width: 15.5em; }
+  .links { margin-top: 1em; max-width: 100%; }
+  .box::before { content: ""; left: 0; bottom: 0; width: var(--bank-d-w); height: var(--bank-d-h); background-image: var(--bank-d); }
+  .pc::before { content: ""; right: 3%; top: calc(var(--cloud-a-d-h) * -.4); width: var(--cloud-a-d-w); height: var(--cloud-a-d-h); background-image: var(--cloud-a-d); }
+  .pc::after { content: ""; left: calc(var(--cloud-b-d-w) * -.38); top: 33%; width: var(--cloud-b-d-w); height: var(--cloud-b-d-h); background-image: var(--cloud-b-d); }
+  .chapter { --m-top: calc((100cqh - var(--pc-h)) / 2 + var(--pc-top) - var(--h2) * 1.3 * .048); }
+  .back { position: absolute; left: 0; bottom: calc(100% + min(1.1em, (var(--m-top) - 2.2em) / 2)); margin: 0; }   /* in the room above the title, which stays on the casing's top edge */   /* the title's capitals on the casing's top edge too */
+}
+@media (min-width: 1160px) and (min-height: 660px) and ((max-width: 1279.98px) or (max-height: 699.98px)) {
+  .box { --dgx: 24px; }              /* the smallest wide layout: the two disks stand a little apart, so the four links still fit their column in one row */
+}
+@media (min-width: 1160px) and (min-height: 660px) and ((max-width: 1439.98px) or (max-height: 799.98px)) {
+  .links { gap: 6px 10px; }
+}
+
+/* ================================================================== middle: machine left, guide right */
+@media (min-width: 736px) and (min-height: 548px) and ((max-width: 1159.98px) or (max-height: 659.98px)) {
+  .box {
+    --v2e: clamp(var(--v2), calc(100svh - var(--pc-h) - var(--v1) - 24px), calc(var(--disk-h) + 6px));   /* how much of the second row shows: all of it where there is room */
+    grid-template-columns: var(--gap) var(--pc-w) var(--gap) 1fr; grid-template-rows: auto 1fr; min-height: calc(var(--pc-h) + var(--v1) + var(--v2));
+  }
+  .box::after { grid-column: 4; grid-row: 1 / -1; }
+  .box::before { content: ""; left: -150px; bottom: 0; width: var(--bank-s-w); height: var(--bank-s-h); background-image: var(--bank-s); }
+  .pc::before { content: ""; right: 6%; top: calc(var(--cloud-a-s-h) * -.45); width: var(--cloud-a-s-w); height: var(--cloud-a-s-h); background-image: var(--cloud-a-s); }
+  .stage { grid-column: 2; grid-row: 1 / -1; align-self: center; display: flex; flex-direction: column; }
+  .id { grid-column: 4; grid-row: 1; padding: max(10px, calc((100svh - var(--pc-h) - var(--v1) - var(--v2e)) / 2 + var(--pc-top) - var(--h1) * 1.34 * .044)) var(--m-side) 0; }   /* the name's capitals on the casing's top edge */
+  .manual { grid-column: 4; grid-row: 2; }
+  .chapter { --m-top: .8em; }
+  .id::after { content: ""; display: block; margin-top: .7em; border-top: 2px solid var(--ink); }
+  .line { margin-top: .55em; max-width: 24em; }
+  .links { margin-top: .75em; }
+}
+
+/* ================================================================== phone: title, machine, disks, guide */
+@media (max-width: 735.98px), (max-height: 547.98px) {
+  .box { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto 1fr; justify-items: center; min-height: 600px; }
+  .box::after { grid-column: 1; grid-row: 3; justify-self: stretch; }
+  .id, .stage, .manual { grid-column: 1; }
+  .stage { position: relative; }
+  .stage::before { content: ""; left: 50%; bottom: 0; margin-left: calc(var(--bank-p-w) / -2); width: var(--bank-p-w); height: var(--bank-p-h); background-image: var(--bank-p); }
+  .id { grid-row: 1; justify-self: stretch; padding: var(--p-top, 12px) var(--m-side) 0; display: grid; grid-template-columns: auto auto auto 1fr auto; gap: 0 16px; align-items: center; }
+  .stage { grid-row: 2; display: flex; flex-direction: column; align-items: center; margin-top: var(--p-gap, 8px); }
+  .manual { grid-row: 3; justify-self: stretch; }
+  h1 { grid-column: 1 / span 4; white-space: nowrap; }
+  .line { grid-column: 1 / -1; grid-row: 2; margin-top: .4em; text-wrap: balance; }
+  .links { display: contents; }
+  .links a { grid-row: 3; min-height: var(--link-h, 36px); }
+  .links a.primary { grid-row: 1; grid-column: 5; min-height: 36px; }
+  .chapter { --m-top: var(--p-chap, .75em); padding-bottom: 9px; }
+  .bar { padding-left: 7%; padding-right: 6%; gap: 5px; font-size: 9.5px; }
+  .pager { gap: 4px; }
+  .folio { position: absolute; right: var(--m-side); top: calc(var(--m-top) + var(--h2) * 1.3 * .423 - 12px); height: 24px; padding: 0; gap: .45em; }   /* centred on the title's capitals */
+  .folio button { width: 30px; height: 24px; }
+  .chapter.is-paged h2 { max-width: calc(100% - 110px); }
+  /* a chapter with the way back above its title: the page-turn buttons sit on that line, and the title has the full width */
+  .chapter:has(.back) .folio { top: calc(var(--m-top) + .92em * .8 - 12px); }
+  .chapter.is-paged:has(.back) h2 { max-width: none; }
+  .back { margin-bottom: .25em; }
+  /* the second row runs under the manual's page */
+  .disk:not(.is-flying) { clip-path: inset(-40px -40px calc(var(--disk-h) - var(--v2) - (1 - var(--row)) * 400px) -40px); }
+}
+
+/* middle and phone: six disks in two rows of three, tucked under the machine's foot, each row lying on the one before */
+@media (max-width: 1159.98px), (max-height: 659.98px) {
+  .pc { order: 1; }
+  .disks { order: 2; width: var(--pc-w); height: calc(var(--v1) + var(--v2e, var(--v2))); }
+  .disk {
+    --pitch: calc((var(--pc-w) - var(--disk-w)) / 2);
+    --x: calc(var(--col) * var(--pitch)); --y: calc(var(--row) * (var(--v1) + var(--hide)) - var(--hide)); --nudge: translateY(3px);
+  }
+  .disk:focus-visible .disk-body { outline-offset: -3px; }
+  .label { --band: 3px; --label-top: .2em; }
+}
+
+/* in the rack only the head of a label shows: a two-line name leaves no room for its years, so they are not half-shown */
+@media (max-width: 1159.98px), (max-height: 659.98px) { .disk[data-lines="2"] .label-short { display: none; } }
+
+/* ================================================================== the panels' lists
+   Every panel: its title, then one or two lists, set as a contents page.
+   A row is the same parts wherever it stands:
+     .k  the key        "Full-stack"           "Brokk / SlopCop"      "Web platform"    "78K"
+     .v  its words      "TypeScript, Python…"  "Software Engineer"    "Site, accounts…" "visitors to the Power Ranking…"
+     .t  a closing figure, in the start panel's list of disks only    "2025–26"
+   The key runs in ahead of its words, in bold. In the start panel a disk's row is one line, with dots leading to its years.
+   The lists: .skills and .jobs (the start panel); .facts and .nums (a disk's panel: what it was and what was built, then its numbers).
+   Line heights and paddings are rounded to whole pixels (each has a plain value before it for a browser without
+   round()), so every row of a list is exactly as tall as the next and no rule falls between two pixels.
+   The title's size is the --h2 of tools/steps.json: three quarters of the name's. */
+
+.rows { margin: 0; padding: .62em 0; padding: round(.62em, 1px) 0; list-style: none; border-top: 2px solid var(--ink); }
+.body > .rows:first-child { margin-top: .7em; margin-top: round(.7em, 1px); }      /* the title stands on this rule */
+.rows dt, .rows dd { margin: 0; }
+.rows .row {
+  display: block; padding: .42em 0; padding: round(.42em, 1px) 0;
+  line-height: 1.36; line-height: round(1.36em, 1px); text-wrap: pretty; color: inherit; text-decoration: none;
+}
+.rows .k { display: inline; font-weight: 700; padding-right: .5em; }
+.rows .v { display: inline; color: var(--quiet); }
+.rows .t { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.nums .k { font-variant-numeric: tabular-nums; }
+/* in the start panel a disk's row is one line: key, words, dots standing on the baseline, the years */
+.jobs .row { display: flex; align-items: baseline; white-space: nowrap; }
+.jobs .k { flex: none; }
+.jobs .v { flex: 1; min-width: 0; display: flex; align-items: baseline; }
+.jobs .v::after { content: ""; flex: 1; min-width: 0; margin: 0 .45em; border-bottom: 2px dotted rgb(22 34 42 / .42); }
+.jobs .t { flex: none; }
+.jobs .row:hover .k { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+.jobs .row:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.no-js .jobs { display: none; }        /* without scripts every chapter follows this one: nothing to point at */
+
+/* an aside (what the place is) gives way first on a short page; everything else is paged, never dropped.
+   (A wide layout's page is never this short: this is the middle layout, where the name block stands over the panel.) */
+@media (min-width: 736px) and (min-height: 548px) {
+  @container (max-height: 499.98px) { .rows .aside { display: none; } }
+}
+/* phone: the disks are the start panel's second list, and a short page has no room for asides */
+@media (max-width: 735.98px), (max-height: 547.98px) {
+  .jobs, .rows .aside { display: none; }
+  .body > .rows:first-child { margin-top: .5em; margin-top: round(.5em, 1px); }
+  /* the shortest pages (about 100 px of paper): the rows close up before any of them is turned to a second page */
+  @container (max-height: 139.98px) {
+    .body > .rows:first-child { margin-top: .25em; margin-top: round(.25em, 1px); }
+    .rows { padding: .15em 0; padding: round(.15em, 1px) 0; }
+    .rows .row { padding: .22em 0; padding: round(.22em, 1px) 0; }
+  }
+}

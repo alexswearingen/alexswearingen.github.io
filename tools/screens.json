@@ -1,0 +1,115 @@
+{
+ "slopcop": [
+  {
+   "shot": "slopcop-hero",
+   "caption": "The SlopCop landing page",
+   "clip": "slopcop-hero",
+   "sizes": [
+    512,
+    896,
+    1280
+   ],
+   "q": 27
+  },
+  {
+   "shot": "slopcop-blog",
+   "caption": "The blog theme"
+  },
+  {
+   "shot": "slopcop-rank",
+   "caption": "Power Ranking"
+  },
+  {
+   "shot": "slopcop-docs",
+   "caption": "The docs site"
+  },
+  {
+   "shot": "slopcop-pricing",
+   "caption": "The pricing page"
+  }
+ ],
+ "revojam": [
+  {
+   "shot": "revojam-live",
+   "caption": "On Mogswamp's stream",
+   "clip": "revojam-live"
+  },
+  {
+   "shot": "revojam-1",
+   "caption": "A Revojam room"
+  },
+  {
+   "shot": "revojam-3",
+   "caption": "Streamer landing page"
+  },
+  {
+   "shot": "revojam-2",
+   "caption": "Host controls, 2021"
+  }
+ ],
+ "loanscout": [
+  {
+   "shot": "loanscout-1",
+   "caption": "The LoanScout app, 2023"
+  }
+ ],
+ "filestride": [
+  {
+   "shot": "filestride-1",
+   "caption": "The FileStride dashboard"
+  },
+  {
+   "shot": "filestride-2",
+   "caption": "As Kobox, in 2019"
+  }
+ ],
+ "side": [
+  {
+   "shot": "minecraft-demo",
+   "caption": "Twitch Plays Minecraft",
+   "clip": "minecraft-demo"
+  },
+  {
+   "shot": "watch-rec",
+   "caption": "squirtle.tv: the Rec Room",
+   "clip": "watch-rec",
+   "trim": [
+    168,
+    268,
+    168,
+    0
+   ]
+  },
+  {
+   "shot": "watch-blackjack",
+   "caption": "squirtle.tv: blackjack",
+   "clip": "watch-blackjack"
+  },
+  {
+   "shot": "atrium-three",
+   "caption": "Atrium Graphics logos"
+  }
+ ],
+ "sheet": [
+  [
+   "slopcop",
+   "slopcop-hero",
+   "Brokk / SlopCop"
+  ],
+  [
+   "revojam",
+   "revojam-1",
+   "Revojam"
+  ],
+  [
+   "filestride",
+   "filestride-1",
+   "FileStride"
+  ],
+  [
+   "side",
+   "minecraft-demo",
+   "Side projects"
+  ]
+ ]
+}
